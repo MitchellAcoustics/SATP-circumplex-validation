@@ -1,0 +1,437 @@
+---
+title: Supplementary Material (B) - Testing the Circumplex Structure of the Soundscape Survey
+description: |
+  Accompanying the paper: "Soundscape descriptors in eighteen languages: translation and validation through listening experiments
+author:
+  - name: Andrew Mitchell
+    email: andrew.mitchell.18@ucl.ac.uk
+    affiliations: 
+        - id: ucl-iede
+          name: University College London
+          department: Institute for Environmental Design and Engineering
+          address: Central House, 14 Upper Woburn Place
+          city: London
+          state: UK
+          postal-code: WC1H 0NN
+    attributes:
+        corresponding: true
+    orcid: 0000-0003-0978-5046
+  - name: Francesco Aletta
+    email: f.aletta@ucl.ac.uk
+    orcid: 0000-0003-0351-3189
+    affiliations:
+        - ref: ucl-iede
+abstract: |
+
+date: last-modified
+---
+
+## Setup
+
+```{python}
+#| output: false
+
+# Import the required packages
+import pandas as pd
+import seaborn as sns
+from pathlib import Path
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
+import numpy as np
+from datetime import datetime
+import circumplex
+import json
+
+
+today = datetime.today().strftime('%Y-%m-%d')
+```
+
+```{python}
+#| output: false
+
+# Define the scales and angles to be used
+scales = ["PAQ1", "PAQ2", "PAQ3", "PAQ4", "PAQ5", "PAQ6", "PAQ7", "PAQ8"]
+eq_angles = [0, 45, 90, 135, 180, 225, 270, 315]
+
+# Define the data and output folders
+data_folder = Path("../data/")
+output_folder = Path(f"../outputs/{today}")
+
+# Load data
+satp = pd.read_excel(data_folder / "SATP Dataset v1.4.xlsx")
+
+lvls = pd.read_excel(data_folder / "LLAN.xlsx")
+# Clean up the lvls data
+lvls = lvls.groupby("Mark/Group Name").max().drop("Channel Name", axis=1)
+lvls.rename(columns={"L/dB(SPL)": "max_Leq", "L(A)/dB(SPL)": "max_LAeq", "N/soneGF": "max_N", "L90(A)/dB(SPL)": "max_LA90"}, inplace=True)
+
+# Add the levels to the satp data
+satp = satp.merge(lvls, left_on="Recording", right_on = "Mark/Group Name", right_index=True)
+
+# Load the results from the latest SEM analysis
+sem_res = pd.read_csv(output_folder / "sem-fit-ipsatized.csv")
+sem_res.drop("Unnamed: 0", axis=1, inplace=True)
+
+# In some cases, the SEM flips the angles (i.e. vibrant is at 315 degrees instead of 45).
+# This function checks for this and corrects it, to ensure all the scales are in the 
+# correct order, but without changing the relationship between the angles, as identified by the SEM.)
+
+# First, get the angles from the SEM results
+ang_df = sem_res[sem_res['Model Type'] == 'Equal comm.'][["Language"] + scales]
+ang_df.set_index("Language", inplace=True)
+
+
+def check_inverse_angles(language_angles):
+    """Check if the angles are inverse"""
+    if language_angles[1] > language_angles[2] or language_angles[2] > language_angles[3]:
+        return True
+    else:
+        return False
+
+# Then, check if the angles are inverse, and if so, correct them
+for lang in ang_df.index:
+    if check_inverse_angles(ang_df.loc[lang].values):
+        ang_df.loc[lang][1:] = 360 - ang_df.loc[lang][1:]
+
+ang_dict = ang_df.T.to_dict(orient="list")
+ang_dict
+```
+
+## Calculate the SEM fit score
+
+```{python}
+# Define the thresholds for the SEM fit criteria
+thresholds = {
+    "p": 0.05,
+    "CFI": 0.92, # ours
+    # "CFI": 0.9, # Rogoza
+    "GFI": 0.9,
+    "AGFI": 0.85,
+    "SRMR": 0.08,
+    "MCSC": -0.7,
+    # "RMSEA": 0.08, # ours
+    "RMSEA": 0.13, # Rogoza
+    "GDIFF": 25,
+}
+
+# Choose which criteria to include in the final score
+# incl_in_score = ['p', 'CFI', 'GFI', 'SRMR', 'MCSC'] # ours
+# incl_in_score = ['p', 'CFI', 'GFI', 'AGFI', 'RMSEA'] # Rogoza
+incl_in_score = ['p', 'CFI', 'GFI', 'AGFI', 'SRMR'] # mixed
+
+# Define the thresholds for the final score
+pass_thresh = 5
+tent_thresh = 4
+
+# Calculate the final score
+sem_res['p_pass'] = sem_res['p'] <= thresholds['p']
+sem_res['CFI_pass'] = sem_res['CFI'] >= thresholds['CFI']
+sem_res['GFI_pass'] = sem_res['GFI'] >= thresholds['GFI']
+sem_res['AGFI_pass'] = sem_res['AGFI'] >= thresholds['AGFI']
+sem_res['SRMR_pass'] = sem_res['SRMR'] <= thresholds['SRMR']
+# sem_res['MCSC_pass'] = sem_res['MCSC'] <= thresholds['MCSC']
+# sem_res['RMSEA_pass'] = sem_res['RMSEA'] <= thresholds['RMSEA']
+# sem_res['GDIFF_pass'] = sem_res['GDIFF'] <= thresholds['GDIFF']
+
+sem_res['Score'] = sem_res[[x + '_pass' for x in incl_in_score]].sum(axis=1)
+sem_res['Score'] = sem_res['Score'].astype(int)
+sem_res['passing'] = pd.cut(sem_res['Score'], bins=[0, tent_thresh, pass_thresh, 7], labels=['Fail', 'Tentative', 'Pass'], right=False)
+# Save the results
+sem_res.to_excel(output_folder / f"{today}_sem-fit-results-Rogoza.xlsx", index=False)
+
+sem_res[["Language", "Model Type", "Score", "passing"]].loc[sem_res["Model Type"] == "Equal comm."].sort_values("Score", ascending=False)
+
+```
+
+## Structural Summary Method Analysis
+
+```{python}
+# Perform the SSM analysis
+passing = sem_res.loc[sem_res["Model Type"] == "Equal comm."].query("passing != 'Fail'")['Language'].values
+
+satp = satp.query("Language in @passing")
+
+eq_res = circumplex.ssm_analyse(satp, scales, ['max_N'], grouping=['Language'], angles=eq_angles)
+corr_res = circumplex.ssm_analyse(satp, scales, ['max_N'], grouping=['Language'], grouped_angles=ang_dict)
+
+eq_res.plot()
+corr_res.plot()
+```
+
+```{python}
+# Combine the equal angle and corrected angle results
+eq_df = eq_res.table
+eq_df["model"] = "Equal Angles"
+
+corr_df = corr_res.table
+corr_df["model"] = "Corrected Angles"
+
+res_df = pd.concat([eq_df, corr_df], axis=0)
+res_df.reset_index(drop=True, inplace=True)
+res_df.sort_values("label", inplace=True)
+res_df.to_csv(output_folder / f"{today}_ssm-fit.csv")
+```
+
+```{python}
+res_df
+```
+
+```{python}
+fig, axes = plt.subplots(9, 2, figsize=(12, 9*4), sharey=True)
+eq_res.profile_plots(axes=axes);
+plt.show()
+```
+
+```{python}
+fig, axes = plt.subplots(9, 2, figsize=(12, 9*4), sharey=True)
+corr_res.profile_plots(axes=axes);
+plt.show()
+```
+
+## Placing circumplex items in the circumplex
+
+```{python}
+from matplotlib import colormaps
+
+def plot_circumplex(scale, reduced_eq_results: circumplex.SSMResults, reduced_corr_results: circumplex.SSMResults):
+
+    fig, ax = plt.subplots(1, 2, figsize=(10, 5), subplot_kw={"projection": "polar"})
+    colors = colormaps.get_cmap("tab20").colors
+    colors = iter(colors)
+
+    for res in reduced_eq_res.results:
+        ax[0].plot(
+            np.deg2rad(res.displacement),
+            res.amplitude,
+            color=next(colors),
+            marker="o",
+            markersize=10,
+            label = res.label,
+        )
+    ax[0].set_title("Equal Angles")
+
+    colors = colormaps.get_cmap("tab20").colors
+    colors = iter(colors)
+    for res in reduced_corr_res.results:
+        ax[1].plot(
+            np.deg2rad(res.displacement),
+            res.amplitude,
+            color=next(colors),
+            marker="o",
+            markersize=10,
+            label = res.label
+        )
+    ax[1].set_title("Corrected Angles")
+    ax[1].legend(bbox_to_anchor=(1.1, 1.1))
+
+    plt.suptitle(scale)
+    plt.tight_layout()
+
+
+
+eq_locating_lists = []
+corr_locating_lists = []
+
+for scale in scales:
+
+    index = scales.index(scale)
+    reduced_scales = scales[:index] + scales[index+1:]
+    reduced_eq_angles = eq_angles[:index] + eq_angles[index+1:]
+    reduced_corr_angles = {lang: ang_dict[lang][:index] + ang_dict[lang][index+1:] for lang in passing}
+
+    reduced_eq_res = circumplex.ssm_analyse(satp, reduced_scales, [scale], grouping=['Language'], angles=reduced_eq_angles)
+    reduced_corr_res = circumplex.ssm_analyse(satp, reduced_scales, [scale], grouping=['Language'], grouped_angles=reduced_corr_angles)
+
+    plot_circumplex(scale, reduced_eq_res, reduced_corr_res)
+
+    eq_locating_lists.append(reduced_eq_res)
+    corr_locating_lists.append(reduced_corr_res)
+
+
+```
+
+```{python}
+def transpose_results_lists_to_ssm_results(list_of_results):
+    # Initialize a dictionary to hold the lists
+    results_dict = {group: [] for group in list_of_results[0].groups}
+
+    for ssm_res in list_of_results:
+        for ssm_param in ssm_res.results:
+            # Check if the group exists in the dictionary
+            if ssm_param.group in results_dict:
+                # Append the ssm_param to the appropriate list in the dictionary
+                results_dict[ssm_param.group].append(ssm_param)
+
+    return results_dict
+
+per_lang_eq_locating_lists = transpose_results_lists_to_ssm_results(eq_locating_lists)
+per_lang_corr_locating_lists = transpose_results_lists_to_ssm_results(corr_locating_lists)
+
+for key, val in per_lang_eq_locating_lists.items():
+    per_lang_eq_locating_lists[key] = circumplex.SSMResults(val)
+
+for key, val in per_lang_corr_locating_lists.items():
+    per_lang_corr_locating_lists[key] = circumplex.SSMResults(val)
+
+
+per_lang_eq_locating_lists['eng'].plot()
+per_lang_corr_locating_lists['eng'].plot()
+```
+
+
+```{python}
+from scipy.spatial import procrustes
+
+def test_rogoza_procrustes():
+    theor_disp = [225, 270, 315]
+    emp_disp = [216.4, 267.2, 329.9]
+    data2 = np.round(np.array((np.sin(np.deg2rad(emp_disp)), np.cos(np.deg2rad(emp_disp)))), 3).T
+    data1 = np.round(np.array((np.sin(np.deg2rad(theor_disp)), np.cos(np.deg2rad(theor_disp)))), 3).T
+    print("Empirical sine/cosine values")
+    print(data2)
+    print("Theoretical sine/cosine values")
+    print(data1)
+
+    mtx1, mtx2, disparity = procrustes(data1, data2)
+    print("Congruence: ", 1 - disparity)
+
+# test_rogoza_procrustes()
+
+# print("=============================/n")
+
+
+def procrustes_congruence(lang_reduced_corr_res_table, target_angles=eq_angles):
+
+    data2 = np.array((np.sin(np.deg2rad(lang_reduced_corr_res_table['displacement'])), np.cos(np.deg2rad(lang_reduced_corr_res_table['displacement'])))).T
+
+    data1 = np.ones_like(data2)
+    data1[:, 0] = np.sin(np.deg2rad(target_angles))
+    data1[:, 1] = np.cos(np.deg2rad(target_angles))
+
+    # print("Empirical sine/cosine values")
+    # print(data2)
+    # print("Theoretical sine/cosine values")
+    # print(data1)
+
+    mtx1, mtx2, disparity = procrustes(data1, data2)
+    return np.round(1 - disparity, 3)
+
+for lang in passing:
+    print("=============================")
+    print(lang)
+    print("Equal Angles:     ", procrustes_congruence(per_lang_eq_locating_lists[lang].table))
+    print("Corrected Angles: ", procrustes_congruence(per_lang_corr_locating_lists[lang].table))
+
+```
+
+
+## German locations
+
+```{python}
+
+deu_data = pd.read_excel(
+    data_folder / "SATP Dataset v1.4.xlsx",
+    sheet_name="deu TUB",
+    usecols=["Participant", "Recording", 
+            "PAQ1", "PAQ2", "PAQ3", "PAQ4", "PAQ5", "PAQ6", "PAQ7", "PAQ8",
+            "abwechslungsreich", # PAQ 2 alt
+            "dynamisch", # PAQ3 alt
+            "chaotisch", # PAQ4 alt
+            "störend", # PAQ5 alt
+            "monoton", # PAQ6 alt
+            "statisch", # PAQ7 alt
+            "erholsam", # PAQ8 alt
+        ]
+    )
+
+deu_data.rename(columns={
+    "abwechslungsreich": "PAQ2_alt",
+    "dynamisch": "PAQ3_alt",
+    "chaotisch": "PAQ4_alt",
+    "störend": "PAQ5_alt",
+    "monoton": "PAQ6_alt",
+    "statisch": "PAQ7_alt",
+    "erholsam": "PAQ8_alt",
+}, inplace=True)
+
+alt_scales = ["PAQ2_alt", "PAQ3_alt", "PAQ4_alt", "PAQ5_alt", "PAQ6_alt", "PAQ7_alt", "PAQ8_alt"]
+
+deu_eq = circumplex.ssm_analyse(deu_data, scales, alt_scales, angles=eq_angles)
+deu_corr = circumplex.ssm_analyse(deu_data, scales, alt_scales, angles=ang_dict['deu'])
+
+
+
+```
+
+```{python}
+
+ell_data = pd.read_excel(
+    data_folder / "SATP Dataset v1.4.xlsx",
+    sheet_name="ell TUC",
+    usecols = [
+        "Participant", "Recording",
+        "PAQ1", "PAQ2", "PAQ3", "PAQ4", "PAQ5", "PAQ6", "PAQ7", "PAQ8",
+        "Uneventful 2", "Eventful 2", "Monotonous 2", "Uneventful 3", "Eventful 4"
+    ]
+)
+
+ell_data.rename(columns = {
+    "Uneventful 2": "PAQ7_alt1",
+    "Eventful 2": "PAQ3_alt1",
+    "Monotonous 2": "PAQ6_alt1",
+    "Uneventful 3": "PAQ7_alt2",
+    "Eventful 4": "PAQ3_alt2",
+}, inplace=True)
+
+alt_scales = ["PAQ3_alt1", "PAQ3_alt2", "PAQ6_alt1", "PAQ7_alt1", "PAQ7_alt2"]
+alt_target_angles = [86.0, 86.0, 233.0, 267.0, 267.0]
+
+ell_eq = circumplex.ssm_analyse(ell_data, scales, alt_scales, angles=eq_angles)
+ell_corr = circumplex.ssm_analyse(ell_data, scales, alt_scales, angles=ang_dict['ell'])
+
+
+ell_eq.plot()
+ell_corr.plot()
+```
+
+```{python}
+print(procrustes_congruence(ell_eq.table, target_angles=alt_target_angles))
+print(procrustes_congruence(ell_corr.table, target_angles=alt_target_angles))
+
+
+
+```
+
+```{python}
+
+lang_rec_means = satp.groupby(["Language", "Recording"])[scales].mean()
+lang_rec_means.reset_index(inplace=True)
+
+base_lang = "arb"
+secondary_lang_means = satp.groupby(["Recording"])[scales].mean().reset_index(drop=True)
+# secondary_lang = 'eng'
+
+for base_lang in lang_rec_means.Language.unique():
+    test_res = []
+    base_lang_means = lang_rec_means.query("Language == @base_lang")[scales].reset_index(drop=True)
+    for scale in scales:
+        # corrs = base_lang_means.corrwith(
+        #     lang_rec_means.query("Language == @secondary_lang")[scale].reset_index(drop=True)
+        #     )
+        corrs = base_lang_means.corrwith(secondary_lang_means[scale])
+        # ssm_res = circumplex.ssm_parameters(corrs.values[1:], eq_angles)
+        ssm_res = circumplex.SSMParams(
+            corrs,
+            scales,
+            ang_dict[base_lang],
+            scale,
+        )
+        test_res.append(ssm_res)
+
+    print("======= " + base_lang + " =======")
+    test_res = circumplex.SSMResults(test_res)
+    print(f"Congruence eq angles:   {procrustes_congruence(test_res.table, eq_angles)}")
+    print(f"Congruence corr angles: {procrustes_congruence(test_res.table, ang_dict[base_lang])}")
+    test_res.plot()
+    plt.show()
+```

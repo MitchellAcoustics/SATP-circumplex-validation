@@ -1,0 +1,39 @@
+project:
+  title: "SATP Circumplex Testing"
+  # output-dir: _output
+
+toc: true
+number-sections: true
+bibliography: drafts/FellowshipRefs.bib  
+  
+format:
+  html:
+    toc: true
+    toc-expand: 3
+    theme: flatly
+    number-sections: true
+    code-fold: true
+    page-layout: full
+    embed-resources: true
+  elsevier-pdf:
+    hyperrefoptions: 
+      - "citecolor=black"
+    echo: false
+    latex-clean: true
+    keep-tex: false
+    journal:
+      name: PsyArxiv
+      formatting: preprint
+      model: 3p
+      cite-style: authoryear
+    include-in-header: 
+      text: |
+        \usepackage{gensymb}
+
+
+citation: true
+latex-output-dir: ../pdf/
+
+execute:
+  warning: false
+  cache: true
