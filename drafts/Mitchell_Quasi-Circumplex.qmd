@@ -1,0 +1,303 @@
+---
+title: Testing and adjusting translations of quasi-circumplex instruments
+type: manuscript
+description: |
+author:
+  - name: Andrew Mitchell
+    email: andrew.mitchell.18@ucl.ac.uk
+    affiliations: 
+        - id: ucl-iede
+          name: University College London
+          department: Institute for Environmental Design and Engineering
+          address: Central House, 14 Upper Woburn Place
+          city: London
+          state: UK
+          postal-code: WC1H 0NN
+    attributes:
+        corresponding: true
+    orcid: 0000-0003-0978-5046
+  - name: Francesco Aletta
+    email: f.aletta@ucl.ac.uk
+    orcid: 0000-0003-0351-3189
+    affiliations:
+        - ref: ucl-iede
+abstract: |
+  Circumplex models are a powerful tool in psychology, often used to visualize and interpret complex multivariate data. In order to enable its use across many contexts, cultures, and languages, its necessary to validate the structure of the circumplex items. The goal of validated translations is to ensure that the circumplex structure is maintained across translations, allowing for cross-cultural comparisons. The structure of the circumplex is key to determining where external variables are located. Given differing angles and communalities, the external variable can occupy different locations within the circumplex. Revealing and validating the true structure of a particular circumplex model. We therefore propose a four-step procedure which can confirm the quasi-circumplex structure of a circumplex instrument, derive angle corrections, and test the congruence between the theoretical circumplex and the translated instruments. We apply this procedure to the Soundscape Circumplex Model (SCM), a quasi-circumplex model which describes the perception of ambient sound environments. We test the circumplex structure of the SCM in 10 languages, and show that the circumplex structure is maintained across most languages. We then use the corrected angles to locate the circumplex scales within each language, and show that the circumplex scales are located in the same positions across all languages. This procedure can be used to test and adjust translations of quasi-circumplex instruments, allowing for direct comparison of data across languages.
+format:
+  html:
+    toc: true
+    toc-expand: 2
+    theme: flatly
+    number-sections: true
+    code-fold: show
+    page-layout: full
+    embed-resources: true
+  elsevier-pdf:
+    hyperrefoptions: 
+      - "citecolor=black"
+    echo: false
+    latex-clean: true
+    keep-tex: false
+    journal:
+      name: PsyArxiv
+      formatting: preprint
+      model: 3p
+      cite-style: authoryear
+
+bibliography: FellowshipRefs.bib
+date: last-modified
+---
+
+# Introduction
+
+In this analysis, we aim to test the circumplex structure of various soundscape survey translations. The circumplex model is a powerful tool in psychology, often used to visualize and interpret complex multivariate data. In order to enable its use across many contexts, cultures, and languages, its necessary to validate the structure of the circumplex items. The goal of validated translations is to ensure that the circumplex structure is maintained across translations, allowing for cross-cultural comparisons.
+
+Circumplex models have been used to describe a wide range of psychological phenomena, including personality traits [@Wiggins1979], values [@Schwartz2012], affects [@Russell1980circumplex], and identity formation modes [@Cieciuch2017]. The circumplex model is a special case of a more general class of models, the circular models, where scales are arranged in a circular order. The circumplex model is a special case of the circular model where the scales are equally spaced and have equal communality.
+
+The concept of the psychometric circumplex model, first introduced by Guttman in 1954, revolves around the idea of a circular relationship among variables. This means that the correlations between these variables follow a pattern that increases and decreases in a way that resembles a cosine wave, as explained by Grassi, Luccio, & di Blas in 2010 and Yik & Russell in 2004.
+
+Guttman made a distinction between two types of models: the quasi-circumplex model and the circulant model. The quasi-circumplex model represents a loosely ordered circular arrangement of variables without any specific constraints on the distances between them. On the other hand, the circulant model, as proposed by Guttman, enforces an equal spacing constraint, meaning that the distances between the variables in the circular arrangement are kept equal. *\[cite this\]*
+
+::: callout-note
+Rephrase this paragraph to better match Browne.
+:::
+
+Browne further expanded on the circumplex model in 1992 and 1995 by differentiating between equal spacing and equal communality (or radii) constraints. Browne described four variations of circumplex models, which include three types of quasi-circumplex models and one circulant model. These variations include the unconstrained or loosely ordered quasi-circumplex, the equal spacing quasi-circumplex, the equal communality quasi-circumplex, and the circulant model that maintains both equal spacing and equal communality.
+
+## Defining the circumplex model
+
+> Individual differences are conceptualized in models usually composed of a set of variables. Taking into account the relations between the variables, two kinds of models can be distinguished. In the first type, relations between variables are not strictly determined, while in the second type the relations between variables are precisely described based on theoretical reasoning. In the first type of models the necessary requirement is the differentiability between variables. As an example, take the Dark Triad [@Paulhus2002]. Narcissism, psychopathy, and Machiavellianism are expected to be related to each other (because they describe a common phenomenon), but not too much (because they focus on various aspects of the described phenomenon). Such models are usually tested through the means of factor analysis. In the second type of models, two requirements matter. In addition to the differentiability between variables, precisely determined relations between variables are expected. There are several subtypes of such models. In some of them the variables are claimed to be orthogonal, thus the correlations between variables are expected to be zero. This is, for example, the case for the Big Five [@Mccrae1997]. A special case of models within this type are the circular and circumplex models. In such models, there are several expectations regarding the relations between variables. Some variables are expected to be orthogonal (not correlated), some variables are expected to be negatively correlated and some variables are expected to be more correlated than others.
+
+Correlation matrix structure:
+
++------+----------+----------+----------+----------+----------+----------+----------+------+
+|      | V1       | V2       | V3       | V4       | V5       | V6       | V7       | V8   |
++======+==========+==========+==========+==========+==========+==========+==========+======+
+| V1   | 1        |          |          |          |          |          |          |      |
++------+----------+----------+----------+----------+----------+----------+----------+------+
+| V2   | $\rho_1$ | 1        |          |          |          |          |          |      |
++------+----------+----------+----------+----------+----------+----------+----------+------+
+| V3   | $\rho_2$ | $\rho_1$ | 1        |          |          |          |          |      |
++------+----------+----------+----------+----------+----------+----------+----------+------+
+| V4   | $\rho_3$ | $\rho_2$ | $\rho_1$ | 1        |          |          |          |      |
++------+----------+----------+----------+----------+----------+----------+----------+------+
+| V5   | $\rho_4$ | $\rho_3$ | $\rho_2$ | $\rho_1$ | 1        |          |          |      |
++------+----------+----------+----------+----------+----------+----------+----------+------+
+| V6   | $\rho_3$ | $\rho_4$ | $\rho_3$ | $\rho_2$ | $\rho_1$ | 1        |          |      |
++------+----------+----------+----------+----------+----------+----------+----------+------+
+| V7   | $\rho_2$ | $\rho_3$ | $\rho_4$ | $\rho_3$ | $\rho_2$ | $\rho_1$ | 1        |      |
++------+----------+----------+----------+----------+----------+----------+----------+------+
+| V8   | $\rho_1$ | $\rho_2$ | $\rho_3$ | $\rho_4$ | $\rho_3$ | $\rho_2$ | $\rho_1$ | 1    |
++------+----------+----------+----------+----------+----------+----------+----------+------+
+
+: Theoretical pattern of the correlation matrix corresponding to a circumplex structure. $\rho_1 > \rho_2 > \rho_3 > \rho_4$. {.column-page}
+
+> The circumplex model can be defined through the terms of: 1) the possibility to locate variables differentiated in the model in the two-dimensional space with 2) equal spacing (i.e. same distance between variables within the model around circumplex) and 3) equal communality (i.e. same distance between variables from the middle of the circle) [@Gurtman1994differentiating, @Pincus2003Interpersonal]. On the basis of these criteria, one could differentiate four models, depicted on Fig. 1: a circular one (less restrictive Model 1), quasi-circumplex (Model 2 and 3), and circumplex (most restrictive Model 4).
+
+> In Model 1 all variables have assigned a circular order, but they are not equally spaced or have equal communality. Such models are called circular.
+
+In a circular factor model, there are two primary components which determine how strictly defined the model is: spacing (angular distance) and communality (common score variance) [8]. `CircE` and `CIRCUM` (a DOS program developed by Browne [6]) allows unconstrained as well as equally spaced estimations of the variables’ spatial positions around 360. 
+•	Levels of circumplexity (unconstrained; variable angles but fixed distance; completely constrained)
+For each of the datasets, three model types are considered:
+1.	‘Unconstrained’ where both the spacing and communalities are allowed to vary.
+2.	‘Equal communalities’ where the angles between factors are allowed to vary, but each factor’s distance from the origin is constrained.
+3.	‘Rigid circumplex’ where both spacing and communalities are constrained to form an ‘ideal’ circumplex structure.
+
+
+This circular arrangement of the variables can be tested using a method proposed by @Rounds2000Tinsley.
+
+> Two models fulfill one of the requirements mentioned above but not another, that is: variables in Model 2 are located with equal spacing but unequal communalities, while variables in Model 3 are located with unequal spacing but equal communalities. These models are referred to as quasi-circumplex. Finally, there is Model 4, where both spacing and communalities are equal. This model is referred to as circumplex.
+
+## Locating external variables within circumplex models
+
+> Circumplex models allow for the testing of complex hypotheses not only about relations between circumplex variables but also about relations with external variables. Therefore, the analyses include two parts. The first one is testing the internal structure of the model in order to confirm its circumplex nature. The second one is the analysis of relations between external variables with variables differentiated in the circumplex or, in other vords, **these variables could be located within the space defined by the circumplex**. This part is especially interesting because locating variables allows hypotheses to be formulated regarding all circumplex variables simultaneously. For example, some of the relations between a particular variable and all variables from a circumplex model would be expected to be strong, some weak, some negative, and some positive. The circumplex model precisely predicts all of them.
+>
+> Circumplex models usually describe a given area of psychological functioning in a comprehensive way. For example, the assumption of the interpersonal circumplex [@Wiggins1979] is that it describes the whole range of interpersonal behaviours. The same concerns other circumplex and circular models like values [@Schwartz2012], affects [@Russell1980circumplex] or identity formation modes [@Cieciuch2017], to mention just a few. Thus, locating an external variable within the space of a circumplex enables interpretation of this variable in the context of the comprehensive description of a given psychological area of interest. A special case within circumplex models that enables such an interpretation, albeit exceptionally far reaching, is the Circumplex of Personality Metatraits [@Strus2017; @Strus2014].
+
+The structure of the circumplex is key to determining where external variables are located. Given differing angles and communalities, the external variable can occupy different locations within the circumplex. Revealing and validating the true structure of a particular circumplex model is therefore key to reliably identifying correct location of external variables within the circumplex space.
+
+## Translating circumplex instruments
+
+Typically, circumplex scales are measured via a series of questions in a survey instrument. These instruments are initially developed in one language and the validity and structure of the instrument is tested in that language. Often these instruments are directly translated into other languages to enable their use in other countries. However, the validity of the instrument in the new language is not guaranteed. Changes in the correlation structure can be caused by errors in the translation process, by semantic and linguistic differences between the translated scales even given a valid translation, and by a lack of generalisability of the circumplex instrument.
+
+It is easy to see how errors in the translation process can lead to changes in the correlation structure. For example, if a question is mistranslated, then the responses to that question will not be correlated with the responses to the other questions in the instrument. Semantic and linguistic differences between the translated scales can also lead to changes in the correlation structure. For example, if a question is translated into a language where the concept does not exist or cannot be easily expressed, then the responses to that question will not be correlated with the responses to the other questions in the instrument. Finally, it may be that even if the original instrument is valid for e.g. the English-speaking population, it may not be valid for other populations due to cultural differences.
+
+### Goals of translating a circumplex instrument
+
+Two approaches could be taken when attempting to translate a survey instrument. The first approach would attempt to achieve direct concurrence with the original instrument, where each scale is directly correlated with the corresponding scale from the original instrument. If the circumplex structure is identical between the two languages, then this approach would allow for the most direct comparison between the two languages. However, if the circumplex structure is not identical between the two languages, then this approach would lead to a loss of information. The second approach would attempt to achieve the same circumplex structure in the new language as in the original language. This approach would allow for the most direct comparison between the two languages.
+
+In this second approach, identifying the differences in structure between translations enable the process of locating an external variable to be corrected for the differences in structure. Given that at minimum a quasi-circumplex structure can be confirmed, then the deviations in either the angles or communalities from the ideal circumplex structure can be measured and accounted for. When this is done separately for the origianl and translated instruments, then an external variable which has the same theoretical location in both instruments should be located in the same location in both corrected instruments.
+
+This has an important impact on comparing results under the two translations. If an external variable is theoretically located in a single, fixed position in the circumplex space, locating it without accounting for the differences in structure between the two translations will lead to different locations in the two translations. The interpretation of this result would then be that the external variable is located in different positions in the two languages. However, if the differences in structure are accounted for, then the external variable should be located in the same position in both translations. By applying the correction we can attempt to discover differences in the effect of external variables, independent of the differences in structure between the two translations.
+
+## A test case: The Soundscape Circumplex Model (SCM)
+
+In 2010, @Axelsson2010principal proposed a *principle components* model of soundscape perception. Due to its similarity to the widely-studied Russell's circumplex model of affect [@Russell1980circumplex], Axelsson's principal component model is often referred to as the Soundscape Circumplex Model (SCM) in soundscape literature. The SCM and the Swedish Soundscape Quality Protocol (SSQP) [@Axelsson2012Swedish] utilizing it quickly became the predominant method of soundscape assessment in both scientific literature and professional practice [@Aletta2023Adoption], due to its ease of use, interpretability, and, crucially, its ability to summarise the complex interrelationships between soundscape descriptors within a straightforward and familiar two-dimensional space. Togeter with a similar principal component model in @Cain2013development, the framework of the circumplex model of soundscape perception was subsequently adapted into an integral part of the standardised protocols for soundscape data collection, specifically in Method A of @ISO12913Part2. 
+
+Currently, the soundscape community relies very heavily on the framework proposed in @ISO12913Part2, both for theory development and for procuring empirical evidence of the benefits of the soundscape approach, in real life scenarios. In a recent systematic literature review, @Aletta2023Adoption idenitified 254 scientific publications which have referred to ISO 12913 since its publication in 2018, with 50 of them appropriately making use of the data collection methods. Of those, several papers included multiple studies, with 51 studies making use of the SCM as recommended in the ISO standard. In addition, the SCM has been used in many more studies without reference to the ISO standard [@Engel2018Review], and has been haphazardly translated into many languages [@Tarlao2016Comparing; @Nagahata2019Examination; @Tarlao2020Investigating; @Aletta2019Exploringa]. 
+
+The Soundscape Circumplex Model (SCM) was developed in 2010 by @Axelsson2010principal to describe the perception of ambient sound environments. It has since been used in a number of studies to describe the perception of soundscapes in different contexts and cultures [@ISO12913Part2]. The SCM is composed of eight scales, which closely resemble the eight scales of the Circumplex Model of Affect [@Russell1980circumplex]. The 7 scales are arranged in two bipolar dimensions, with pleasant-annoying along the x-axis (valence) and eventful-uneventful along the y-axis (arousal). Arranged in a circular pattern around the circumplex, beginning at 0 degrees and moving counter-clockwise, the eight scales are: pleasant (0)
+
+## Locating one circumplex within another
+
+Once the general circumplex structure is tested, it is possible to investigate the likelihood to locate an external variable (e.g., psychoacoustic loudness, N) within the empirical circumplex. The circumplex model provides a precise framework for predicting the relationships between an external variable and all circumplex variables. The Structural Summary Method (SSM) yields several key estimations, including:
+	Model fit (R2), which assesses how well the observed sinusoidal curve aligns with the cosine function, indicating the goodness of fit.
+	Elevation, representing the average correlation between an external variable and all circumplex variables.
+	Amplitude (vector length), measuring the distance from the mean of the external variable's correlation to its peak correlation with circumplex variables. This value signifies the uniqueness of the profile, indicating whether it is prominently associated with a specific circumplex variable or equally related to all.
+	Angular displacement, denoting the angle at which the profile reaches its maximum point, indicating the empirical location of the variable within the circumplex as observed in the data.
+The Structural Summary Method (SSM) is a technique used to summarize correlation patterns among measurement scores that are hypothesized to conform to a circumplex structure (Rogoza, Cieciuch, & Strus, 2021). SSM aims to fit a sinusoidal curve to data points (qi) based on their nominal angular positions (θi). This is achieved by optimizing the parameters for elevation (e), amplitude (i), and displacement (d). Mathematically, these parameters are used to model the correlational information (qi) in equation 1:
+q_i=e+α cos⁡〖(θ_i-d)〗.			(1)
+It is essential to evaluate how well the sinusoidal curve aligns with the cosine function by examining its goodness of fit, as indicated by the R2 value. If R2values fall below 0.70, it is advisable not to interpret the remaining coefficients and to discontinue the process of locating external variables. Conversely, R2 values exceeding 0.80 indicate a strong fit. Additionally, it’s worth mentioning that amplitude estimates, reflecting the distinctiveness of the profile, and elevation estimates, indicating the presence of a general factor, are considered notable when they surpass 0.15.
+
+
+# A four step procedure for the analysis of circumplex models
+
+We expand upon the three-step procedure proposed by @Rogoza2021three and adapt it to the specific case of testing multiple variations (i.e. translations) of the same circumplex instrument.
+
+::: callout-note
+The goals of this procedure are, for each translation, to verify the quasi-circumplex structure of the instrument, to derive angle corrections, and to test the congruence between the corrected circumplex and the theoretical circumplex structure.
+:::
+
+## Step 1: Confirm the circular ordering of the circumplex scales
+
+In line with the procedure taken in @Gurtman2000Interpersonal, we begin by confirming the circular ordering of the circumplex scales. This test, developed by @Rounds2000Tinsley, the test of the circular order model involves comparing the obtained order relations for a set of scales against their hypothesized order given a certain circular model. The index used for this test is @Hubert1987Evaluating's correspondence index (CI).
+
+> (from @Gurtman2000Interpersonal) This provides a descriptive measure of the extent to which the model's order predictions are confirmed in a given sample matrix and is equal to the proportion of predictions met minus the proportion violated. It can thus range from 1.0 (all predictions met) to -1.0 (all predictions violated). Following Tracey et al. (Tracey, 1997; Tracey & Rounds, 1993, 1997; Tracey & Schneider, 1995), we also conducted a randomization test on the hypothesized order relations (Hubert & Arabie, 1987; Rounds et al., 1992). This test provides an exact probability for obtaining the observed model fit in relation to all possible permutations of the matrix.
+
+## Step 2: Confirm the quasi-circumplex structure of the circumplex scales
+
+In the context of the soundscape survey translations, we use CircE to test the circumplex structure of the survey responses. This involves running four different models for each language and compiling the results into a single table.
+
+The models are assessed against a suite of SEM fit indices, which are statistical measures used to evaluate the goodness of fit of the models. These indices include the Chi-squared test, Comparative Fit Index (CFI), Goodness of Fit Index (GFI), Standardized Root Mean Square Residual (SRMR), and Root Mean Squared Error of Approximation (RMSEA).
+
+### Fit Indices
+
++-----------------------------+---------------+---------------------------+
+| **Fit Index**               | **Threshold** | **Reference**             |
++=============================+:=============:+:=========================:+
+| Correspondence Index (CI)   | p \< 0.05,    | @Gurtman2000Interpersonal |
+|                             |               |                           |
+|                             | CI \> 0.70    |                           |
++-----------------------------+---------------+---------------------------+
+| Comparative Fit Index (CFI) | *0.92*        | @Moshona2023Optimization  |
++-----------------------------+---------------+---------------------------+
+| Goodness of Fit Index (GFI) | *0.90*        | @Rogoza2021three          |
++-----------------------------+---------------+---------------------------+
+| Standardized Root Mean      | *0.08*        | @Moshona2023Optimization  |
+| Square Residual (SRMR)      |               |                           |
+|                             |               | @Tarlao2020Investigating  |
++-----------------------------+---------------+---------------------------+
+
+: Fit indices and thresholds, including the reference from which the threshold is derived. {#tbl-indices}
+
+Each model is assessed against a suite of SEM fit indices, summarised in @tbl-indices. These indices include the Comparative Fit Index (CFI), Goodness of Fit Index (GFI), and Standardized Root Mean Square Residual (SRMR).
+
+Interpreting the results of the SEM circumplex analysis using CircE involves understanding the various fit indices and their implications.
+
+1.  Comparative Fit Index (CFI): This index compares the model of interest to a baseline model. Values close to 1 indicate a good fit.
+
+2.  Goodness of Fit Index (GFI): This index measures the proportion of variance that is accounted for by the estimated population covariance. Values close to 1 indicate a good fit.
+
+3.  Standardized Root Mean Square Residual (SRMR): This is the square root of the discrepancy between the residuals of the sample covariance matrix and the hypothesized covariance model. Values less than 0.08 are generally considered good.
+
+4.  Procrustes Rotation Congruence (PRC): This index measures the congruence between the ideal and observed angles. Values close to 1 indicate a good fit.
+
+Then, we run the circumplex analysis for each of the other languages. This is done in a loop, with each language being run separately. The results for each language are then added to the results table.
+
+Importantly, this table also reports the derived angles for each scale for the unconstrained and Equal comm. models. These angles will be carried over and used in the next stage of the analysis, where we will validate the survey instrument by correlating the survey responses with the acoustic indices using the Structural Summary Method (SSM).
+
+## Step 3: Locate the full dataset circumplex scales within each language's circumplex space
+
+As described in @Rogoza2021three, Step Two involves testing whether external variables can be located within the circumplex. This is done by correlating the external variables with the circumplex scales.
+
+Once the general circumplex structure is tested, it is possible to investigate the likelihood to locate an external variable (e.g., psychoacoustic loudness, N) within the empirical circumplex. The circumplex model provides a precise framework for predicting the relationships between an external variable and all circumplex variables. The Structural Summary Method (SSM) yields several key estimations, including:
+
+ * Model fit (R2), which assesses how well the observed sinusoidal curve aligns with the cosine function, indicating the goodness of fit.
+ * Elevation, representing the average correlation between an external variable and all circumplex variables.
+ * Amplitude (vector length), measuring the distance from the mean of the external variable's correlation to its peak correlation with circumplex variables. This value signifies the uniqueness of the profile, indicating whether it is prominently associated with a specific circumplex variable or equally related to all.
+ * Angular displacement, denoting the angle at which the profile reaches its maximum point, indicating the empirical location of the variable within the circumplex as observed in the data.
+
+The Structural Summary Method (SSM) is a technique used to summarize correlation patterns among measurement scores that are hypothesized to conform to a circumplex structure (Rogoza, Cieciuch, & Strus, 2021). SSM aims to fit a sinusoidal curve to data points (qi) based on their nominal angular positions (θi). This is achieved by optimizing the parameters for elevation (e), amplitude (i), and displacement (d). Mathematically, these parameters are used to model the correlational information (qi) in equation 1:
+
+$$
+q_i = e + \alpha cos(\theta_i - d)
+$$
+
+It is essential to evaluate how well the sinusoidal curve aligns with the cosine function by examining its goodness of fit, as indicated by the $R^2$ value. If $R^2$ values fall below 0.70, it is advisable not to interpret the remaining coefficients and to discontinue the process of locating external variables. Conversely, $R^2$ values exceeding 0.80 indicate a strong fit. Additionally, it’s worth mentioning that amplitude estimates, reflecting the distinctiveness of the profile, and elevation estimates, indicating the presence of a general factor, are considered notable when they surpass 0.15.
+
+Because we have derived new angles in the SEM step, we use these 'adjusted' angles for calculating the SSM parameters.
+
+In order to determine whether the language circumplexes can adequately allow an external variable to be located, we use the following criteria:
+
+-   $R^2$ \> 0.8
+-   amplitude \> .15
+
+These indices are based on the criteria used by @Rogoza2021three, however we use an increased criterion of $R^2 > 0.9$ since we have a prior expectation that the circumplex variables should fit very well within each translation's circumplex. 
+
+## Step 4: Accurately locating circumplex items within each language
+
+The final step of @Rogoza2021three 's three step procedure is to test the congruence between the empirical locations and theoretical expectations within the circumplex structure. In the case of the soundscape circumplex and our SATP data, we don't have an external variable with a defined theoretical location within the circumplex - for instance loudness does not have a defined location within the circumplex where it is expected to be located.
+
+Taking inspiration from @Yik2004Relationships, we propose to use the circumplex structure of the soundscape survey itself as the theoretical expectation. @Yik2004Relationship proposes that one circumplex can be located within another by calculating the SSM correlation between each of the scales of the reference circumplex and the test circumplex. In this way, each scale of the reference circumplex can be located within the test circumplex, and we can test whether these empirical locations meet our expectations.
+
+The process to do this is as follows:
+
+1.  For both the reference and test circumplex, calculate the mean value of each scale for each recording.
+2.  Calculate the SSM correlation between each scale of the reference circumplex and the test circumplex, in our case using the corrected angles.
+3.  Test the congruence betwen the empirical locations and theoretical expectations using the Procrustes congruence test [@Rogoza2021three].
+
+We will be using the full dataset as the reference set and the data from each translation as the test set. This effectively means that we are testing whether each translation is able to locate the circumplex structure of the soundscape survey, consistently across all languages.
+
+This aligns with the overall goal of our process of allowing data (i.e. the circumplex coordinate) from different languages to be directly compared, by correcting for the differences in the circumplex structure between languages.
+
+> to minimize $M^2 = \sum (data1 - data2)^2$ , or the sum of the squares of the pointwise differences between the two input datasets.
+
+### Congruence
+
+What @Rogoza2021three (and Orthosim) refer to as Tucker's Congruence Coefficient is also commonly referred to as the cosine similarity (see the [Tensorly documentation](https://tensorly.org/stable/modules/generated/tensorly.metrics.factors.congruence_coefficient.html)). We therefore use the sklearn implementation of cosine similarity to calculate the congruence between the empirical locations and theoretical expectations. This produces a matrix of cosine similarity values, which we then use to calculate the mean congruence, to match the model congruence from @Rogoza2021three.
+
+### Procrustes
+
+However, it appears that, despite @Rogoza2021three 's description, this method is not actually based on a Procrustes analysis. The equivalent distance metric from a Procrustes method would be the rotational-based Procrustes distance, i.e. the squared Froebenius norm of the difference between the two orthogonal matrices. See @Andreella2023Procrustes:
+
+> Instead, the second distance exploits the orthogonal matrix parameters solution of the Procrustes problem. The rotational-based distance computes the squared Frobenius distance between these estimated orthogonal matrices. As we will see, this metric measures the level of dissimilarity/similarity in orientation between matrices/subjects before functional alignment.
+
+Based on the proof given in @Baktiar2015symmetrical, given that the input matrices are scaled (i.e. `rotational(scale=True)`), then the Procrustes distance is a true distance measure which obeys $0 < p(X, Y) < 1$ [@Bakhtiar2015symmetrical, 322]. Therefore we can convert the Procrustes distance to a similarity measure by subtracting it from 1.
+
+# Results
+
+## Step 1: Confirm the circular ordering of the circumplex scales
+
+The results of the circular ordering test are shown in @tbl-circular-order.
+
+{{< embed Mitchell_CircE-Analysis.qmd#tbl-circular-order >}}
+
+## Step 2: Confirm the quasi-circumplex structure of the circumplex scales
+
+{{< embed Mitchell_SSM-Analysis.ipynb#tbl-sem-res >}}
+
+## Step 3: Locate the full dataset circumplex scales within each language's circumplex space
+
+The model fit results for each translation are shown in @tbl-corr-angles-fit. Since every translation is able to adequately locate the circumplex scales, we can proceed to the final step of the analysis.
+
+{{< embed Mitchell_SSM-Analysis.ipynb#fig-profile-plots >}}
+
+{{< embed Mitchell_SSM-Analysis.ipynb#tbl-corr-angles-fit >}}
+
+## Step 4: Accurately locating circumplex items within each language
+
+{{< embed Mitchell_SSM-Analysis.ipynb#tbl-correspondence >}}
+
+@fig-cmn-correspondence gives an example of the impact of using the corrected angles for locating the circumplex scales.
+
+{{< embed Mitchell_SSM-Analysis.ipynb#fig-cmn-correspondence >}}
+
+# Discussion
+
+# Conclusion
+
+# References
+
+# Acknowledgements {.unnumbered .appendix}
+
+The authors would like to express their thanks to Karn Watcharasupat and Steffen Lepa for their helpful discussions which contributed to the development of this analysis. We would also like to thank the many international teams which collected data for the Soundscape Attributes Translation Project (SATP), and the many participants who contributed their time and effort to the project.

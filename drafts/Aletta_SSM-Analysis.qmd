@@ -26,7 +26,11 @@ abstract: |
 date: last-modified
 ---
 
-## Setup
+## Finishing the SEM analysis
+
+This analysis continues from the previous document [Supplementary Material (A) - Testing the Circumplex Structure of the Soundscape Survey](Aletta_SSM-Analysis.qmd). In that stage, we used CircE to test the circumplex structure of the soundscape survey based on a Structural Equation Modelling (SEM) approach and produced a suite of fit indices. First, we will compile and analyse these fit indices results and determine whether each translation has passed the SEM fit criteria.
+
+We will then use the Structural Summary Method (SSM) to analyse the circumplex structure of the soundscape survey.
 
 ```{python}
 #| output: false
@@ -41,13 +45,35 @@ import numpy as np
 from datetime import datetime
 import circumplex
 import json
-
+from scipy.spatial import procrustes
+from tensorly.metrics.factors import congruence_coefficient
 
 today = datetime.today().strftime('%Y-%m-%d')
 ```
 
+As in step one, we load the data and predefine the `scales` and the set of equally-spaced angles to be used in the analysis.
+
+### Angles of the scales
+
+::: {.callout-note title="Intro to standalone paper"}
+As expected, the soundscape circumplex does not conform to a strict circumplex. However, some of the translations are shown to conform with a quasi-circumplex structure. This can present an issue when data from a quasi-circumplex instrument is analysed as if it were a strict circumplex (i.e. with equally spaced angles and equal communalities). This is because the quasi-circumplex structure may result in the data being rotated and displaced, locating some particular analysis at the wrong coordainte within the space.
+
+This error may be considered acceptable if one were only working and comparing results within one instrument (within-instrument analysis), such that the errors from the quasi-circumplexity are consistent. However, when working with translations of the same circumplex instrument, the quasi-circumplexity may result in the data being rotated and displaced differently for each translation. This would result in the data from each translation being located at different coordinates within the space, making direct comparison between translations difficult.
+
+For instrument translations, it is apparent that between-instrument comparisons are equally as important as within-instrument comparisons. As such, a method which would allow the correction or normalisation of data from each translation to a common circumplex structure would be useful.
+:::
+
+DRAFT: Explain the equal vs corrected angles and how we propose to use the corrected angles.
+
+DRAFT: Explain inverse angles, reference @Browne1992Circumplex / CircE docs and their discussion of why we can just reverse them. Maybe in a footnote in those papers?
+
+### Acoustic Data
+
+In addition to the survey responses, we also have acoustic data for each recording. This data includes the $L_{eq}$, $L_{Aeq}$, N, and $L_{A90}$ values for each recording. These values are used to calculate the acoustic indices for each recording, which can then be correlated with the survey responses. This will be used later, in the validation of the survey instrument.
+
 ```{python}
-#| output: false
+#| warning: false
+#| message: false
 
 # Define the scales and angles to be used
 scales = ["PAQ1", "PAQ2", "PAQ3", "PAQ4", "PAQ5", "PAQ6", "PAQ7", "PAQ8"]
@@ -99,35 +125,50 @@ ang_dict
 
 ## Calculate the SEM fit score
 
+The SEM fit score is calculated by counting the number of fit indices that pass the pre-defined threshold. The thresholds are defined in the first part of the code. The thresholds are based on the thresholds used by @Rogoza2021three.
+
+The first part of the code defines a dictionary named `thresholds` which contains the thresholds for different fit criteria used in SEM. These criteria include p-value (p), Comparative Fit Index (CFI), Goodness of Fit Index (GFI), Adjusted Goodness of Fit Index (AGFI), Standardized Root Mean Square Residual (SRMR), and others.
+
+The `incl_in_score` list is used to select which criteria will be included in the final score calculation. The `pass_thresh` and `tent_thresh` variables define the thresholds for passing and tentative passing scores, respectively.
+
+The next part of the code calculates whether each SEM result passes the defined thresholds for each criterion. This is done by comparing the SEM result for each criterion to its respective threshold. The results of these comparisons are stored as boolean values in new columns in the `sem_res` DataFrame.
+
+The final score for each SEM result is then calculated by summing the number of criteria each result passes. This score is stored as an integer in a new column in the `sem_res` DataFrame. The passing column categorizes each SEM result as 'Fail', 'Tentative', or 'Pass' based on its final score.
+
+Finally, the results are saved to an Excel file and a subset of the results is displayed. The subset includes only the results for the "Equal comm." model type and is sorted by score in descending order.
+
 ```{python}
 # Define the thresholds for the SEM fit criteria
 thresholds = {
     "p": 0.05,
-    "CFI": 0.92, # ours
-    # "CFI": 0.9, # Rogoza
-    "GFI": 0.9,
-    "AGFI": 0.85,
-    "SRMR": 0.08,
-    "MCSC": -0.7,
-    # "RMSEA": 0.08, # ours
-    "RMSEA": 0.13, # Rogoza
-    "GDIFF": 25,
+    "CFI": 0.92, #  Moshona et al 2023
+    # "CFI": 0.9, # Rogoza 2021
+    # "CFI": 0.95, # Good fit from Tarlao et al 2021, but 0.90 is considered acceptable
+    "GFI": 0.9,  # Rogoza 2021
+    "AGFI": 0.85, # Rogoza 2021
+    "SRMR": 0.08, # Moshona et al 2023, Tarlao et al 2021
+    # "MCSC": -0.7,
+    # "RMSEA": 0.08, # Moshona et al 2023
+    # "RMSEA": 0.05, # Tarlao et al 2021
+    # "RMSEA": 0.13, # Rogoza says this is might be reasonable
+    # Removed RMSEA at the suggestion of West, S.G., Wu, W., McNeish, D., & Savord, A. (2023). Model Fit in Structural Equation Modeling. In R.H. Hoyle, Handbook of structural equation modeling, second edition (pp. 185-205). New York, NY: Guilford
+    # "GDIFF": 25,
 }
 
 # Choose which criteria to include in the final score
-# incl_in_score = ['p', 'CFI', 'GFI', 'SRMR', 'MCSC'] # ours
-# incl_in_score = ['p', 'CFI', 'GFI', 'AGFI', 'RMSEA'] # Rogoza
-incl_in_score = ['p', 'CFI', 'GFI', 'AGFI', 'SRMR'] # mixed
+# incl_in_score = ['CFI', 'GFI', 'SRMR', 'MCSC'] # ours
+# incl_in_score = ['CFI', 'GFI', 'AGFI', 'RMSEA'] # Rogoza
+incl_in_score = ['CFI', 'GFI', 'SRMR'] # mixed
 
 # Define the thresholds for the final score
-pass_thresh = 5
-tent_thresh = 4
+pass_thresh = 3
+tent_thresh = 2
 
 # Calculate the final score
-sem_res['p_pass'] = sem_res['p'] <= thresholds['p']
+# sem_res['p_pass'] = sem_res['p'] <= thresholds['p']
 sem_res['CFI_pass'] = sem_res['CFI'] >= thresholds['CFI']
 sem_res['GFI_pass'] = sem_res['GFI'] >= thresholds['GFI']
-sem_res['AGFI_pass'] = sem_res['AGFI'] >= thresholds['AGFI']
+# sem_res['AGFI_pass'] = sem_res['AGFI'] >= thresholds['AGFI']
 sem_res['SRMR_pass'] = sem_res['SRMR'] <= thresholds['SRMR']
 # sem_res['MCSC_pass'] = sem_res['MCSC'] <= thresholds['MCSC']
 # sem_res['RMSEA_pass'] = sem_res['RMSEA'] <= thresholds['RMSEA']
@@ -145,20 +186,57 @@ sem_res[["Language", "Model Type", "Score", "passing"]].loc[sem_res["Model Type"
 
 ## Structural Summary Method Analysis
 
+To begin the SSM analysis, we first filter the languages to examine by whether or not they passed Step one, the SEM analysis.
+
 ```{python}
 # Perform the SSM analysis
 passing = sem_res.loc[sem_res["Model Type"] == "Equal comm."].query("passing != 'Fail'")['Language'].values
 
 satp = satp.query("Language in @passing")
+```
 
+### Step two: Locating external variables in the circumplex
+
+As described in @Rogoza2021three, Step Two involves testing whether external variables can be located within the circumplex. This is done by correlating the external variables with the circumplex scales.
+
+For this, we use a consistent external variable across all language datasets - psychoacoustic loudness, `max_N`. For each recording, we have measured the psychoacoustic loudness to which the participants were exposed, for both channels. To get a single level for each recording, we select the maximum loudness level from the two channels, as suggested in @ISO12913Part3.
+
+This `max_N` is then correlated with each circumplex scale across each of the passing language, and the SSM parameters are calculated. Because we have derived new angles in the SEM step, we use these 'corrected' angles for calculating the SSM parameters.
+
+In order to determine whether the language circumplexes can adequately allow an external variable to be located, we use the following criteria:
+
+-   $R^2$ \> 0.8
+-   amplitude \> .15
+
+These indices are based on the criteria used by @Rogoza2021three, however we use an increased criterion of $R^2 > 0.8$ since we have a prior expectation that loudness is a highly significant correlate with soundscape perception. As such, any successful circumplex instrument should show a very good fit when locating loudness.
+
+For this analysis, we use a custom Python package developed for this paper, called `circumplex` which can be installed from PyPI.
+
+```{python}
 eq_res = circumplex.ssm_analyse(satp, scales, ['max_N'], grouping=['Language'], angles=eq_angles)
 corr_res = circumplex.ssm_analyse(satp, scales, ['max_N'], grouping=['Language'], grouped_angles=ang_dict)
 
-eq_res.plot()
+# eq_res.plot()
 corr_res.plot()
+plt.show()
+corr_res.table.drop(columns=['label'])
 ```
 
 ```{python}
+print(f"R2  > 0.8 : {(corr_res.table['r2'] > 0.8).sum()} / {len(corr_res.table)}")
+print(f"amp > 0.15: {(corr_res.table['amplitude'] > 0.15).sum()} / {len(corr_res.table)}")
+```
+
+```{python}
+fig, axes = plt.subplots(8, 2, figsize=(12, 8*4), sharey=True)
+corr_res.profile_plots(axes=axes);
+plt.show()
+```
+
+All of the investigated languages are able to adequately locate an external variable using SSM. We can further investigate the SSM profile of each of these:
+
+```{python}
+# echo: false
 # Combine the equal angle and corrected angle results
 eq_df = eq_res.table
 eq_df["model"] = "Equal Angles"
@@ -169,26 +247,221 @@ corr_df["model"] = "Corrected Angles"
 res_df = pd.concat([eq_df, corr_df], axis=0)
 res_df.reset_index(drop=True, inplace=True)
 res_df.sort_values("label", inplace=True)
-res_df.to_csv(output_folder / f"{today}_ssm-fit.csv")
+# res_df.to_csv(output_folder / f"{today}_ssm-fit.csv")
+```
+
+### Step 3: Accurately locating circumplex items within each language
+
+The final step of @Rogoza2021three 's three step procedure is to test the congruence between the empirical locations and theoretical expectations within the circumplex structure. In the case of the soundscape circumplex and our SATP data, we don't have an external variable with a defined theoretical location within the circumplex - for instance loudness does not have a defined location within the circumplex where it is expected to be located.
+
+Taking inspiration from @Yik2004Relationships, we propose to use the circumplex structure of the soundscape survey itself as the theoretical expectation. @Yik2004Relationship proposes that one circumplex can be located within another by calculating the SSM correlation between each of the scales of the reference circumplex and the test circumplex. In this way, each scale of the reference circumplex can be located within the test circumplex, and we can test whether these empirical locations meet our expectations.
+
+The process to do this is as follows:
+
+1.  For both the reference and test circumplex, calculate the mean value of each scale for each recording.
+2.  Calculate the SSM correlation between each scale of the reference circumplex and the test circumplex, in our case using the corrected angles.
+3.  Test the congruence betwen the empirical locations and theoretical expectations using the Procrustes congruence test [@Rogoza2021three].
+
+We will be using the full dataset as the reference set and the data from each translation as the test set. This effectively means that we are testing whether each translation is able to locate the circumplex structure of the soundscape survey, consistently across all languages.
+
+This aligns with the overall goal of our process of allowing data (i.e. the circumplex coordinate) from different languages to be directly compared, by correcting for the differences in the circumplex structure between languages.
+
+> to minimize $M^2 = \sum (data1 - data2)^2$ , or the sum of the squares of the pointwise differences between the two input datasets.
+
+#### Congruence
+
+What @Rogoza2021three (and Orthosim) refer to as Tucker's Congruence Coefficient is also commonly referred to as the cosine similarity (see the [Tensorly documentation](https://tensorly.org/stable/modules/generated/tensorly.metrics.factors.congruence_coefficient.html)). We therefore use the sklearn implementation of cosine similarity to calculate the congruence between the empirical locations and theoretical expectations. This produces a matrix of cosine similarity values, which we then use to calculate the mean congruence, to match the model congruence from @Rogoza2021three.
+
+We can confirm the equivalence of this method by comparing with the results from @Rogoza2021three 's Orthosim analysis:
+
+```{python}
+def congruence(data1, data2, metric: ['cosine', 'euclidean']='cosine'):
+    from sklearn.metrics.pairwise import cosine_similarity
+    from scipy.spatial.distance import cdist
+
+    if metric == 'cosine':
+        sim = cosine_similarity(data1, data2)
+    elif metric == 'euclidean':
+        sim = 1 - cdist(data1, data2, metric=metric)
+    else:
+        raise ValueError("metric must be 'cosine' or 'euclidean'")
+    cong_vals = np.diag(sim) # Get the diagonal values which compare against the appropriate angles
+    return np.mean(cong_vals), cong_vals
+
+# Data from Rogoza
+data2 = np.array([[-0.59, -0.8], [-1, -0.05], [-0.5, 0.87]])
+data1 = np.array([[-0.71, -0.71], [-1, 0], [-0.71, 0.71]])
+
+model_congruence, scale_congruence = congruence(data1, data2)
+
+print("Model Congruence == 0.984: ", np.round(model_congruence, 3) == 0.984)
+print("Vulnerability Congruence == 0.99: ", np.round(scale_congruence[0], 2) == 0.99)
+print("Antagonism Congruence == 1.0: ", np.round(scale_congruence[1], 2) == 1.0)
+print("Grandiosity Congruence == 0.97: ", np.round(scale_congruence[2], 2) == 0.97)
+
+```
+
+#### Procrustes
+
+However, it appears that, despite @Rogoza2021three 's description, this method is not actually based on a Procrustes analysis. The equivalent distance metric from a Procrustes method would be the rotational-based Procrustes distance, i.e. the squared Froebenius norm of the difference between the two orthogonal matrices. See @Andreella2023Procrustes:
+
+> Instead, the second distance exploits the orthogonal matrix parameters solution of the Procrustes problem. The rotational-based distance computes the squared Frobenius distance between these estimated orthogonal matrices. As we will see, this metric measures the level of dissimilarity/similarity in orientation between matrices/subjects before functional alignment.
+
+As such, we can also calculate this distance using the [`procrustes` package](https://procrustes.qcdevs.org/api/utils.html#procrustes.utils.ProcrustesResult):
+
+```{python}
+def procrustes_distance(data1, data2, procrustes_type='orthogonal', translate=True, scale=True):
+    if procrustes_type == 'orthogonal':
+        from procrustes import orthogonal
+        pro_res = orthogonal(data1, data2, translate=translate, scale=scale)
+    elif procrustes_type == 'rotational':
+        from procrustes import rotational
+        pro_res = rotational(data1, data2, translate=translate, scale=scale)
+    elif procrustes_type == 'generic':
+        from procrustes import generic
+        pro_res = generic(data1, data2, translate=translate, scale=scale)
+    return pro_res.error
 ```
 
 ```{python}
-res_df
+
+def prepare_congruence_matrices(ssm_table, target_angles = eq_angles):
+    """Prepare the congruence matrices for the SSM results"""
+    # Get the data from the SSM table
+    # data2 = np.array((np.cos(np.deg2rad(ssm_table['displacement'])), np.sin(np.deg2rad(ssm_table['displacement'])))).T
+    data2 = ssm_table[['xval', 'yval']].values
+    # Get the data from the target angles
+    data1 = np.ones_like(data2)
+    data1[:, 0] = np.cos(np.deg2rad(target_angles))
+    data1[:, 1] = np.sin(np.deg2rad(target_angles))
+
+    return data1, data2
+
+```
+
+Based on the proof given in @Baktiar2015symmetrical, given that the input matrices are scaled (i.e. `rotational(scale=True)`), then the Procrustes distance is a true distance measure which obeys $0 < p(X, Y) < 1$ [@Bakhtiar2015symmetrical, 322]. Therefore we can convert the Procrustes distance to a similarity measure by subtracting it from 1.
+
+```{python}
+
+overall_means = satp.groupby(["Recording"])[scales].mean().reset_index(drop=True)
+
+lang_rec_means = satp.groupby(["Language", "Recording"])[scales].mean()
+lang_rec_means.reset_index(inplace=True)
+
+def test_language_locations(test_lang_means, test_lang, test_angles, target_angles=eq_angles, scales=('PAQ1', 'PAQ2', 'PAQ3', 'PAQ4', 'PAQ5', 'PAQ6', 'PAQ7', 'PAQ8')):
+    """Test the congruence of the language locations with the target angles"""
+    # test_lang_means = lang_rec_means.query("Language == @test_lang")[scales].reset_index(drop=True)
+    test_res = []
+    for scale in scales:
+        corrs = test_lang_means.corrwith(overall_means[scale])
+        ssm_res = circumplex.SSMParams(
+            corrs,
+            scales,
+            test_angles,
+            scale,
+        )
+        test_res.append(ssm_res)
+
+    test_ssm = circumplex.SSMResults(test_res)
+
+    data1, data2 = prepare_congruence_matrices(test_ssm.table, target_angles=target_angles)
+    test_model_congruence, test_scale_congruences = congruence(data1, data2, metric='cosine')
+    pro_sim = 1 - procrustes_distance(data1, data2, procrustes_type='rotational')
+    return test_ssm, test_model_congruence, test_scale_congruences, pro_sim
+
+locating_corr_angles = {}
+locating_eq_angles = {}
+for test_lang in lang_rec_means.Language.unique():
+    test_lang_means = lang_rec_means.query("Language == @test_lang")[scales].reset_index(drop=True)
+
+    locating_eq_angles[test_lang] = test_language_locations(test_lang_means, test_lang, test_angles=eq_angles, target_angles=eq_angles)
+    locating_corr_angles[test_lang] = test_language_locations(test_lang_means, test_lang, test_angles=ang_dict[test_lang], target_angles=eq_angles)
+
 ```
 
 ```{python}
-fig, axes = plt.subplots(9, 2, figsize=(12, 9*4), sharey=True)
-eq_res.profile_plots(axes=axes);
+congruence_df = pd.DataFrame(
+    {
+        "Language": list(locating_eq_angles.keys()),
+        "Eq Ang Model": [x[1] for x in locating_eq_angles.values()],
+        "Corr Ang Model": [x[1] for x in locating_corr_angles.values()],
+        "Eq Ang Procrustes": [x[3] for x in locating_eq_angles.values()],
+        "Corr Ang Procrustes": [x[3] for x in locating_corr_angles.values()],
+    }
+)
+congruence_df.round(3)
+```
+
+We can see from the above table that the congruence between the empirical locations and theoretical expectations is quite high for all languages. In addition, by using the corrected angles, we can see that the procrustes similarity is improved for nearly all languages (slight decrease for 'ita').
+
+Below, we can show that this looks like in practice. The first plot shows the empirical locations of the scales for the Mandarin translation, using the equal angles. The second plot shows the empirical locations of the scales for the Mandarin translation, using the corrected angles.
+
+```{python}
+locating_eq_angles['cmn'][0].plot()
+plt.show()
+locating_corr_angles['cmn'][0].plot()
 plt.show()
 ```
 
+While the relative locations of the scales around the circumplex are not perfect, it can be clearly seen that when the correction is applied, the scales are much more closely located to the theoretical expectations. Since this is true across all of the languages, we can now have the expectation that we are working within a consistent circumplex space. This means that we can directly compare the circumplex coordinates between languages, and that any differences in the circumplex coordinates are due to differences in the soundscape perception, rather than differences in the circumplex structure of the translation.
+
 ```{python}
-fig, axes = plt.subplots(9, 2, figsize=(12, 9*4), sharey=True)
-corr_res.profile_plots(axes=axes);
+
+cg01_res = circumplex.ssm_analyse(satp.query("Recording == 'CG01'"), scales, grouping=['Language'], grouped_angles=ang_dict)
+cg01_all = circumplex.ssm_analyse(satp.query("Recording == 'CG01'"), scales)
+
+cg01_res.plot()
+plt.show()
+cg01_all.plot()
 plt.show()
 ```
 
-## Placing circumplex items in the circumplex
+## Final scores for circumplex translations
+
+```{python}
+sem_res[["Language", "Model Type", "Score", "passing"]].loc[sem_res["Model Type"] == "Equal comm."].sort_values("Score", ascending=False)
+
+pass_step_3 = congruence_df[congruence_df["Corr Ang Procrustes"] > 0.95]['Language']
+
+passing_res = sem_res.loc[sem_res["Language"].isin(pass_step_3)]
+passing_res[["Language", "Model Type", "Score", "passing"]].loc[passing_res["Model Type"] == "Equal comm."].sort_values("Score", ascending=False)
+
+```
+
+## Using the corrected angles for ISO 12913-3 and @Mitchell2022How style analysis
+
+Making use of these corrected angles in line with either the analysis recommended in @ISO12913Part3 or @Mitchell2022How is quite straightforward. Simply replace the $\cos{45}$ in the ISO projection equation with $\cos{\theta}$ and $\sin{\theta}$, where $\theta$ is the corrected angle for each scale.
+
+For example, the ISO projection equation for ISOPleasant and ISOEventful in Swedish are now:
+
+$$
+P = p + \cos(66)*v + \cos(87)*e + \cos(146)*ch + \cos(175)*a + \cos(249)*m + \cos(275)*u + \cos(335)*ca
+$$
+
+$$
+E = \sin(66)*v + \sin(87)*e + \sin(146)*ch + \sin(175)*a + \sin(249)*m + \sin(275)*u + \sin(335)*ca
+$$
+
+For each language, simply replace the $\theta$ values with the corrected angles for that language.
+
+In more SEM-like terms, we are multiplying each scale by its respective loading expressed in terms of its angle around the circumplex, and then summing the results. Some may argue that we should just directly treat this system as an SEM, however by expressing this projection in terms of the angles, we can directly see how this is related to the circumplex and the projected coordinate point, and more easily compare the results with the results from the SSM analysis.
+
+In that vein, we would actually recommend performing the ISOPleasant & ISOEventful calculations via the Structural Summary Method, rather than the projection method. This provides a more flexible and informative framework for the analysis, and allows for the correlation of the scales with external variables, calculation of model fit, and other useful analyses.
+
+```{python}
+all_res = circumplex.ssm_analyse(satp, scales, grouping=['Recording'])
+# all_res.plot()
+```
+
+```{python}
+lang = 'eng'
+lang_res = circumplex.ssm_analyse(satp.query("Language == @lang"), scales, grouping=['Recording'])
+
+data1, data2 = prepare_congruence_matrices(lang_res.table, all_res.table['displacement'])
+print(congruence(data1, data2))
+```
+
+## 
 
 ```{python}
 from matplotlib import colormaps
@@ -229,209 +502,5 @@ def plot_circumplex(scale, reduced_eq_results: circumplex.SSMResults, reduced_co
 
 
 
-eq_locating_lists = []
-corr_locating_lists = []
 
-for scale in scales:
-
-    index = scales.index(scale)
-    reduced_scales = scales[:index] + scales[index+1:]
-    reduced_eq_angles = eq_angles[:index] + eq_angles[index+1:]
-    reduced_corr_angles = {lang: ang_dict[lang][:index] + ang_dict[lang][index+1:] for lang in passing}
-
-    reduced_eq_res = circumplex.ssm_analyse(satp, reduced_scales, [scale], grouping=['Language'], angles=reduced_eq_angles)
-    reduced_corr_res = circumplex.ssm_analyse(satp, reduced_scales, [scale], grouping=['Language'], grouped_angles=reduced_corr_angles)
-
-    plot_circumplex(scale, reduced_eq_res, reduced_corr_res)
-
-    eq_locating_lists.append(reduced_eq_res)
-    corr_locating_lists.append(reduced_corr_res)
-
-
-```
-
-```{python}
-def transpose_results_lists_to_ssm_results(list_of_results):
-    # Initialize a dictionary to hold the lists
-    results_dict = {group: [] for group in list_of_results[0].groups}
-
-    for ssm_res in list_of_results:
-        for ssm_param in ssm_res.results:
-            # Check if the group exists in the dictionary
-            if ssm_param.group in results_dict:
-                # Append the ssm_param to the appropriate list in the dictionary
-                results_dict[ssm_param.group].append(ssm_param)
-
-    return results_dict
-
-per_lang_eq_locating_lists = transpose_results_lists_to_ssm_results(eq_locating_lists)
-per_lang_corr_locating_lists = transpose_results_lists_to_ssm_results(corr_locating_lists)
-
-for key, val in per_lang_eq_locating_lists.items():
-    per_lang_eq_locating_lists[key] = circumplex.SSMResults(val)
-
-for key, val in per_lang_corr_locating_lists.items():
-    per_lang_corr_locating_lists[key] = circumplex.SSMResults(val)
-
-
-per_lang_eq_locating_lists['eng'].plot()
-per_lang_corr_locating_lists['eng'].plot()
-```
-
-
-```{python}
-from scipy.spatial import procrustes
-
-def test_rogoza_procrustes():
-    theor_disp = [225, 270, 315]
-    emp_disp = [216.4, 267.2, 329.9]
-    data2 = np.round(np.array((np.sin(np.deg2rad(emp_disp)), np.cos(np.deg2rad(emp_disp)))), 3).T
-    data1 = np.round(np.array((np.sin(np.deg2rad(theor_disp)), np.cos(np.deg2rad(theor_disp)))), 3).T
-    print("Empirical sine/cosine values")
-    print(data2)
-    print("Theoretical sine/cosine values")
-    print(data1)
-
-    mtx1, mtx2, disparity = procrustes(data1, data2)
-    print("Congruence: ", 1 - disparity)
-
-# test_rogoza_procrustes()
-
-# print("=============================/n")
-
-
-def procrustes_congruence(lang_reduced_corr_res_table, target_angles=eq_angles):
-
-    data2 = np.array((np.sin(np.deg2rad(lang_reduced_corr_res_table['displacement'])), np.cos(np.deg2rad(lang_reduced_corr_res_table['displacement'])))).T
-
-    data1 = np.ones_like(data2)
-    data1[:, 0] = np.sin(np.deg2rad(target_angles))
-    data1[:, 1] = np.cos(np.deg2rad(target_angles))
-
-    # print("Empirical sine/cosine values")
-    # print(data2)
-    # print("Theoretical sine/cosine values")
-    # print(data1)
-
-    mtx1, mtx2, disparity = procrustes(data1, data2)
-    return np.round(1 - disparity, 3)
-
-for lang in passing:
-    print("=============================")
-    print(lang)
-    print("Equal Angles:     ", procrustes_congruence(per_lang_eq_locating_lists[lang].table))
-    print("Corrected Angles: ", procrustes_congruence(per_lang_corr_locating_lists[lang].table))
-
-```
-
-
-## German locations
-
-```{python}
-
-deu_data = pd.read_excel(
-    data_folder / "SATP Dataset v1.4.xlsx",
-    sheet_name="deu TUB",
-    usecols=["Participant", "Recording", 
-            "PAQ1", "PAQ2", "PAQ3", "PAQ4", "PAQ5", "PAQ6", "PAQ7", "PAQ8",
-            "abwechslungsreich", # PAQ 2 alt
-            "dynamisch", # PAQ3 alt
-            "chaotisch", # PAQ4 alt
-            "störend", # PAQ5 alt
-            "monoton", # PAQ6 alt
-            "statisch", # PAQ7 alt
-            "erholsam", # PAQ8 alt
-        ]
-    )
-
-deu_data.rename(columns={
-    "abwechslungsreich": "PAQ2_alt",
-    "dynamisch": "PAQ3_alt",
-    "chaotisch": "PAQ4_alt",
-    "störend": "PAQ5_alt",
-    "monoton": "PAQ6_alt",
-    "statisch": "PAQ7_alt",
-    "erholsam": "PAQ8_alt",
-}, inplace=True)
-
-alt_scales = ["PAQ2_alt", "PAQ3_alt", "PAQ4_alt", "PAQ5_alt", "PAQ6_alt", "PAQ7_alt", "PAQ8_alt"]
-
-deu_eq = circumplex.ssm_analyse(deu_data, scales, alt_scales, angles=eq_angles)
-deu_corr = circumplex.ssm_analyse(deu_data, scales, alt_scales, angles=ang_dict['deu'])
-
-
-
-```
-
-```{python}
-
-ell_data = pd.read_excel(
-    data_folder / "SATP Dataset v1.4.xlsx",
-    sheet_name="ell TUC",
-    usecols = [
-        "Participant", "Recording",
-        "PAQ1", "PAQ2", "PAQ3", "PAQ4", "PAQ5", "PAQ6", "PAQ7", "PAQ8",
-        "Uneventful 2", "Eventful 2", "Monotonous 2", "Uneventful 3", "Eventful 4"
-    ]
-)
-
-ell_data.rename(columns = {
-    "Uneventful 2": "PAQ7_alt1",
-    "Eventful 2": "PAQ3_alt1",
-    "Monotonous 2": "PAQ6_alt1",
-    "Uneventful 3": "PAQ7_alt2",
-    "Eventful 4": "PAQ3_alt2",
-}, inplace=True)
-
-alt_scales = ["PAQ3_alt1", "PAQ3_alt2", "PAQ6_alt1", "PAQ7_alt1", "PAQ7_alt2"]
-alt_target_angles = [86.0, 86.0, 233.0, 267.0, 267.0]
-
-ell_eq = circumplex.ssm_analyse(ell_data, scales, alt_scales, angles=eq_angles)
-ell_corr = circumplex.ssm_analyse(ell_data, scales, alt_scales, angles=ang_dict['ell'])
-
-
-ell_eq.plot()
-ell_corr.plot()
-```
-
-```{python}
-print(procrustes_congruence(ell_eq.table, target_angles=alt_target_angles))
-print(procrustes_congruence(ell_corr.table, target_angles=alt_target_angles))
-
-
-
-```
-
-```{python}
-
-lang_rec_means = satp.groupby(["Language", "Recording"])[scales].mean()
-lang_rec_means.reset_index(inplace=True)
-
-base_lang = "arb"
-secondary_lang_means = satp.groupby(["Recording"])[scales].mean().reset_index(drop=True)
-# secondary_lang = 'eng'
-
-for base_lang in lang_rec_means.Language.unique():
-    test_res = []
-    base_lang_means = lang_rec_means.query("Language == @base_lang")[scales].reset_index(drop=True)
-    for scale in scales:
-        # corrs = base_lang_means.corrwith(
-        #     lang_rec_means.query("Language == @secondary_lang")[scale].reset_index(drop=True)
-        #     )
-        corrs = base_lang_means.corrwith(secondary_lang_means[scale])
-        # ssm_res = circumplex.ssm_parameters(corrs.values[1:], eq_angles)
-        ssm_res = circumplex.SSMParams(
-            corrs,
-            scales,
-            ang_dict[base_lang],
-            scale,
-        )
-        test_res.append(ssm_res)
-
-    print("======= " + base_lang + " =======")
-    test_res = circumplex.SSMResults(test_res)
-    print(f"Congruence eq angles:   {procrustes_congruence(test_res.table, eq_angles)}")
-    print(f"Congruence corr angles: {procrustes_congruence(test_res.table, ang_dict[base_lang])}")
-    test_res.plot()
-    plt.show()
 ```

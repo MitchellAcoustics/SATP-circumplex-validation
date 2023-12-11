@@ -34,32 +34,6 @@ knitr::opts_chunk$set(echo = knitr::is_html_output())
 is_html <- knitr::is_html_output()
 ```
 
-
-
-## Introduction
-
-In this analysis, we aim to test the circumplex structure of various soundscape survey translations. The circumplex model is a powerful tool in psychology, often used to visualize and interpret complex multivariate data. In order to enable its use across many contexts, cultures, and languages, its necessary to validate the structure of the circumplex items. The goal of validated translations is to ensure that the circumplex structure is maintained across translations, allowing for cross-cultural comparisons.
-
-Our approach will involve several steps. First, we will load the necessary libraries and our dataset. The dataset comprises responses to the soundscape survey in various languages. Each response includes ratings on a set of scales (the perceptual attributes from @Axelsson2010principal (PAQs)), which we will use to analyze the circumplex structure.
-
-Next, we will prepare the variables for the circumplex analysis. This includes defining the names of the scales used in the survey and the ideal angles for the circumplex analysis. These angles represent the theoretical ideal locations of each scale on the circumplex.
-
-After loading and preparing the data, we will proceed to the analysis phase. We will use the CircE package, a tool specifically designed for circumplex analysis. This will allow us to test the circumplex structure of the survey translations and visualize the results.
-
-### Testing the Circumplex
-
-The concept of the psychometric circumplex model, first introduced by Guttman in 1954, revolves around the idea of a circular relationship among variables. This means that the correlations between these variables follow a pattern that increases and decreases in a way that resembles a cosine wave, as explained by Grassi, Luccio, & di Blas in 2010 and Yik & Russell in 2004.
-
-Guttman made a distinction between two types of models: the quasi-circumplex model and the circulant model. The quasi-circumplex model represents a loosely ordered circular arrangement of variables without any specific constraints on the distances between them. On the other hand, the circulant model, as proposed by Guttman, enforces an equal spacing constraint, meaning that the distances between the variables in the circular arrangement are kept equal. *[cite this]*
-
-::: {.callout-note}
-Rephrase this paragraph to better match Browne.
-:::
-
-Browne further expanded on the circumplex model in 1992 and 1995 by differentiating between equal spacing and equal communality (or radii) constraints. Browne described four variations of circumplex models, which include three types of quasi-circumplex models and one circulant model. These variations include the unconstrained or loosely ordered quasi-circumplex, the equal spacing quasi-circumplex, the equal communality quasi-circumplex, and the circulant model that maintains both equal spacing and equal communality.
-
-## Data Preparation
-
 ```{r load data, warning=FALSE}
 #| output: false
 
@@ -106,11 +80,6 @@ satp <- read_excel(temp.file,
 
 ### Ipsatization
 
-Ipsatization is a process used in psychology to adjust for individual differences in response style when analyzing survey data. It involves transforming each participant's responses by subtracting their mean response across all items from their response to each individual item. This process can help to control for individual differences in the use of response scales, such as some participants being more likely to use extreme responses than others.
-
-In the context of this code, ipsatization is being used to adjust the responses to the soundscape survey. The goal is to ensure that the analysis of the circumplex structure of the survey translations is not unduly influenced by individual differences in response style. By subtracting the mean of each participant's responses across all scales from their response to each scale, the analysis can focus more on the relative differences between the scales for each participant, rather than the absolute values of the responses.
-
-
 ```{r}
 # Ipsatize the data
 # For each participant, we subtract the mean of their response to all scales
@@ -126,14 +95,12 @@ satp[scales] <- satp |>
     mutate(across(all_of(scales), ~ .x - parts_means$Mean))
 ```
 
-## Step Zero: Tracey's Circular Order Model
-
-In line with the procedure taken in @Gurtman2000Interpersonal, we begin by confirming the circular ordering of the circumplex scales. This test, developed by Tracey, Rounds, and colleages [@Rounds2000Tinsley], the test of the circular order model involves comparing the obtained order relations for a set of scales against their hypothesized order given a certain circular model. The index used for this test is Hubert and Arabie's [@Hubert1987Evaluating] correspondence index (CI). 
-> (from @Gurtman2000Interpersonal) This provides a descriptive measure of the extent to which the model's order predictions are confirmed in a given sample matrix and is equal to the proportion of predictions met minus the proportion violated. It can thus range from 1.0 (all predictions met) to -1.0 (all predictions violated). Following Tracey et al. (Tracey, 1997; Tracey & Rounds, 1993, 1997; Tracey & Schneider, 1995), we also conducted a randomization test on the hypothesized order relations (Hubert & Arabie, 1987; Rounds et al., 1992). This test provides an exact probability for obtaining the observed model fit in relation to all possible permutations of the matrix.
-
-We performed these tests using ...
+## Step One: Tracey's Circular Order Model
 
 ```{r}
+#| tbl-cap: "Results of the Circular Order analysis of the SATP dataset."
+#| label: tbl-circular-order
+#| cache: true
 library(RTHORR)
 source(here("utils/RTHORR_funcs.R")) # Load our own functions
 
@@ -145,10 +112,8 @@ for (lang in unique(satp$Language)) {
     matrices[[lang]] <- lang_data
 }
 randall_df_output <- my_randall_from_df(matrices, names(matrices), ord="circular8")
-randall_df_output
+knitr::kable(randall_df_output)
 ```
-
-The first strict criteria is that the model must achieve a $p<0.05$ for the randomization test. This is the case for all languages, so we can proceed to the next step. Here we apply a threshold of 0.7 to the CI values.
 
 ```{r}
 print("Pass: ")
@@ -163,44 +128,6 @@ satp <- satp[satp$Language %in% pass, ] # Filter to just the languages that pass
 ```
 
 ## Structural Equation Modelling using Browne's Stochastic Circumplex Model
-
-In the context of the soundscape survey translations, we use CircE to test the circumplex structure of the survey responses. This involves running four different models for each language and compiling the results into a single table.
-
-The models are assessed against a suite of SEM fit indices, which are statistical measures used to evaluate the goodness of fit of the models. These indices include the Chi-squared test, Comparative Fit Index (CFI), Goodness of Fit Index (GFI), Standardized Root Mean Square Residual (SRMR), and Root Mean Squared Error of Approximation (RMSEA).
-
-### Fit Indices
-
-| **Fit Index**                                     | **Threshold** |
-| :------------------------------------------------ | :-----------: |
-| Chi-squared ($\chi^2$)                            | *p < 0.05*    |
-| Comparative Fit Index (CFI)                       | *0.90*        |
-| Goodness of Fit Index (GFI)                       | *0.90*        |
-| Standardized Root Mean Square Residual  (SRMR)    | *0.08*        |
-| Root Mean Squared Error of  Approximation (RMSEA) | *0.13*        |
-| Minimum Common Score Correlations  (MCSC)         | *-0.8*        |
-| Gap difference test (GDIFF)                       | *20*          |
-
-: Fit indices and thresholds, including the reference from which the threshold is derived. {#tbl-indices}
-
-Each model is assessed against a suite of SEM fit indices, summarised in @tbl-indices. These indices include the $\chi^2$ test, Comparative Fit Index (CFI), Goodness of Fit Index (GFI), Standardized Root Mean Square Residual (SRMR), and Root Mean Squared Error of Approximation (RMSEA). Two additional indices are calculated which are not considered 'typical' fit indices for SEMs, but which have proved to be crucial for the analysis of the circumplex. 
-
-Interpreting the results of the SEM circumplex analysis using CircE involves understanding the various fit indices and their implications.
-
-1. Chi-squared test ($\chi^2$): This is a statistical test to determine if the observed data matches the expected data. A low $\chi^2$ value indicates a good fit.
-
-2. Comparative Fit Index (CFI): This index compares the model of interest to a baseline model. Values close to 1 indicate a good fit.
-
-3. Goodness of Fit Index (GFI): This index measures the proportion of variance that is accounted for by the estimated population covariance. Values close to 1 indicate a good fit.
-
-4. Standardized Root Mean Square Residual (SRMR): This is the square root of the discrepancy between the residuals of the sample covariance matrix and the hypothesized covariance model. Values less than 0.08 are generally considered good.
-
-<!-- 5. Root Mean Squared Error of Approximation (RMSEA): This index measures the lack of fit per degree of freedom in the model. Values less than 0.06 are generally considered good. -->
-
-6. Minimum Common Score Correlations (MCSC): This index measures the minimum correlation between any two variables in the model. Higher values indicate a better fit.
-
-<!-- 7. Gap Difference test (GDIFF): This test quantifies the proximity of the estimated angles to the ideal circumplex. It calculates all squared differences between ideal and observed angles. Smaller values indicate greater circumplexity of the scores. -->
-
-7. Procrustes Rotation Congruence (PRC): This index measures the congruence between the ideal and observed angles. Values close to 1 indicate a good fit.
 
 #### Inter-rater Reliability
 
@@ -234,7 +161,7 @@ Within each loop, we check for any errors in execution and append these to a lis
 
 ```{r}
 #| output: false
-
+#| cache: true
 languages <- unique(satp$Language) # Get a list of all the languages
 
 full_table <- circe_satp_eng$res_table # Start with the English results
@@ -299,7 +226,3 @@ if (is_html) {
     kableExtra::kable_classic_2()
 }
 ```
-
-<!-- ## Step Two: Structural Summary Method (SSM)
-
-{{< embed Aletta_SSM-Analysis.ipynb echo=true >}} -->

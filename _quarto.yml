@@ -1,5 +1,6 @@
 project:
   title: "SATP Circumplex Testing"
+  # type: manuscript
   # output-dir: _output
 
 toc: true
@@ -12,7 +13,7 @@ format:
     toc-expand: 3
     theme: flatly
     number-sections: true
-    code-fold: true
+    code-fold: show
     page-layout: full
     embed-resources: true
   elsevier-pdf:
@@ -32,7 +33,7 @@ format:
 
 
 citation: true
-latex-output-dir: ../pdf/
+# latex-output-dir: ../pdf/
 
 execute:
   warning: false
