@@ -23,11 +23,36 @@ author:
         - ref: ucl-iede
 abstract: |
 
+format:
+  # html:
+  #   toc: true
+  #   toc-expand: 2
+  #   theme: flatly
+  #   number-sections: true
+  #   code-fold: show
+  #   page-layout: full
+  #   embed-resources: true
+  elsevier-pdf:
+    hyperrefoptions: 
+      - "citecolor=black"
+    echo: true
+    latex-clean: true
+    keep-tex: false
+    toc: false
+    journal:
+      name: PsyArxiv
+      formatting: preprint
+      model: 3p
+      cite-style: authoryear
+
+bibliography: FellowshipRefs.bib
+
 date: last-modified
 keep-ipynb: true
 cache: true
 ---
 
+# Step One
 
 ```{r setup, echo=FALSE}
 knitr::opts_chunk$set(echo = knitr::is_html_output())
