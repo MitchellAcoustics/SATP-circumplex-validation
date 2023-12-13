@@ -112,7 +112,7 @@ for (lang in unique(satp$Language)) {
     matrices[[lang]] <- lang_data
 }
 randall_df_output <- my_randall_from_df(matrices, names(matrices), ord="circular8")
-knitr::kable(randall_df_output)
+knitr::kable(randall_df_output, digits=3, align = "c")
 ```
 
 ```{r}
