@@ -52,7 +52,7 @@ keep-ipynb: true
 cache: true
 ---
 
-# Step One
+# Testing the quasi-circumplex structure (Steps 1 and 2)
 
 ```{r setup, echo=FALSE}
 knitr::opts_chunk$set(echo = knitr::is_html_output())
@@ -158,8 +158,6 @@ satp <- satp[satp$Language %in% pass, ] # Filter to just the languages that pass
 
 Note that we do not report a measure of Inter-rater Reliability (IRR) for the original survey data as a test of the validity of the survey instrument. Although this has been used previously in soundscape research [see @Erfanian2021Psychological and @Tarlao2020Investigating], we feel that IRR imposes assumptions which do not necessarily hold in soundscape research. Primarily, IRR tests make the assumption that for a reliable response, raters should have high agreement about the subject. To rely on an IRR for a soundscape survey instrument would impose an external requirement that all listeners agree on the emotional affect evoked by a particular sound. In the context of the SATP dataset, where all participants were exposed to the same recording, an IRR metric such as Kendall's coefficient of concordance $W$, could be applied for the ratings given for each recording, with a high $W$ theoretically indicating good instrument reliability. However, what it would actually indicate is a high degree of agreement regarding the emotional affect of that recording. As noted in @Mitchell2022How, this assumption should not necessarily be applied to soundscape assessments, given that respondents would be expected to have differing perceptual responses to the same sound and, in fact, this variability in response should be one of the outcomes to be investigated by researchers. A low IRR would therefore not necessarily indicate a poor measurement instrument, but instead could indicate a sound for which there is valid disagreement about the perception. A sound which for some groups is considered pleasant and for others it is annoying would result in a low IRR, completely independent of the validity of the measurement instrument.
 
-Instead, the goal of the validity testing presented here is to confirm whether the soundscape survey instrument
-
 ### Run `CircE` Analysis
 
 The bulk of the code for this process has been pulled out into a separate `sem_funcs.R` file, which is loaded at the beginning of the analysis. This file contains the functions used to run the circumplex analysis and compile the results into a single table.
@@ -217,9 +215,9 @@ for (lang in languages) {
 
 ```
 
-`zsm` fails to converge, even under different constraints and choice of `m` betas. We will therefore exclude it from the analysis moving forward and label is as 'Model failed to converge'.
-
 ```{r}
+# Catching any errors
+
 for (name in names(errors)) {
   print("==========  Error in:  =============")
   print(errors[name])
