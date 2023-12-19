@@ -1,5 +1,5 @@
 ---
-title: Supplementary Material (A) - Testing the Circumplex Structure of the Soundscape Survey
+title: Supplementary Material (B) - Code for Steps 1 & 2, Browne's Circular Stochastic Process Model
 description: |
   Accompanying the paper: "Soundscape descriptors in eighteen languages: translation and validation through listening experiments
 author:
@@ -22,6 +22,7 @@ author:
     affiliations:
         - ref: ucl-iede
 abstract: |
+  Code accompanying the paper: "Soundscape descriptors in eighteen languages: translation and validation through listening experiments
 
 format:
   # html:
@@ -73,11 +74,14 @@ library(CircE)
 library(RCurl)
 
 source(here("utils/sem_funcs.R")) # Load our own functions
-dir.create(here("outputs", Sys.Date()), showWarnings = FALSE) # Create a folder for the outputs
+
+# Create a folder for the outputs
+dir.create(here("outputs", Sys.Date()), showWarnings = FALSE)
 output_dir <- here("outputs", Sys.Date())
 
 # Prep variables for the circumplex analysis
-scales <- c("PAQ1", "PAQ2", "PAQ3", "PAQ4", "PAQ5", "PAQ6", "PAQ7", "PAQ8") # Names of the scales for circumplex analysis
+# Names of the scales for circumplex analysis
+scales <- c("PAQ1", "PAQ2", "PAQ3", "PAQ4", "PAQ5", "PAQ6", "PAQ7", "PAQ8")
 eq.angles <- c(0, 45, 90, 135, 180, 225, 270, 315) # Ideal angles for circumplex analysis
 
 # Load in the SATP dataset from Zenodo
@@ -153,10 +157,6 @@ satp <- satp[satp$Language %in% pass, ] # Filter to just the languages that pass
 ```
 
 ## Structural Equation Modelling using Browne's Stochastic Circumplex Model
-
-#### Inter-rater Reliability
-
-Note that we do not report a measure of Inter-rater Reliability (IRR) for the original survey data as a test of the validity of the survey instrument. Although this has been used previously in soundscape research [see @Erfanian2021Psychological and @Tarlao2020Investigating], we feel that IRR imposes assumptions which do not necessarily hold in soundscape research. Primarily, IRR tests make the assumption that for a reliable response, raters should have high agreement about the subject. To rely on an IRR for a soundscape survey instrument would impose an external requirement that all listeners agree on the emotional affect evoked by a particular sound. In the context of the SATP dataset, where all participants were exposed to the same recording, an IRR metric such as Kendall's coefficient of concordance $W$, could be applied for the ratings given for each recording, with a high $W$ theoretically indicating good instrument reliability. However, what it would actually indicate is a high degree of agreement regarding the emotional affect of that recording. As noted in @Mitchell2022How, this assumption should not necessarily be applied to soundscape assessments, given that respondents would be expected to have differing perceptual responses to the same sound and, in fact, this variability in response should be one of the outcomes to be investigated by researchers. A low IRR would therefore not necessarily indicate a poor measurement instrument, but instead could indicate a sound for which there is valid disagreement about the perception. A sound which for some groups is considered pleasant and for others it is annoying would result in a low IRR, completely independent of the validity of the measurement instrument.
 
 ### Run `CircE` Analysis
 
@@ -234,10 +234,16 @@ Importantly, this table also reports the derived angles for each scale for the u
 write.csv(full_table, here(output_dir, "sem-fit-ipsatized.csv"))
 if (is_html) {
     kable(full_table, digits = 3, align = "c") %>%
-        kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive", "bordered"))
+        kableExtra::kable_styling(
+          bootstrap_options = c(
+            "striped", "hover", "condensed", "responsive", "bordered"
+            )
+          )
 } else {
     kableExtra::kbl(
-      full_table[, ! colnames(full_table) %in% c('Dataset', 'Model Type', 'RMSEA.L', 'RMSEA.U', 'GDIFF', scales)],
+      full_table[, ! colnames(full_table) %in% c(
+        'Dataset', 'Model Type', 'RMSEA.L', 'RMSEA.U', 'GDIFF', scales
+        )],
       format = "latex",
       row.names = FALSE,
       booktabs = T,
