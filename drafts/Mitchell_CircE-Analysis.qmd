@@ -109,11 +109,10 @@ satp <- read_excel(temp.file,
 
 ### Ipsatization
 
+For each participant, we subtract the mean of their response to all scales across all recordings from their response to each scale for each recording. This is done at the suggestion of JM Girard/R Circumplex.
+
 ```{r}
 # Ipsatize the data
-# For each participant, we subtract the mean of their response to all scales
-# across all recordings from their response to each scale for each recording
-# This is done at the suggestion of JM Girard/R Circumplex
 
 satp |>
     group_by(Participant) |>
@@ -233,7 +232,7 @@ Importantly, this table also reports the derived angles for each scale for the u
 ```{r, results='asis'}
 write.csv(full_table, here(output_dir, "sem-fit-ipsatized.csv"))
 if (is_html) {
-    kable(full_table, digits = 3, align = "c") %>%
+    kable(full_table, digits = 5, align = "c") %>%
         kableExtra::kable_styling(
           bootstrap_options = c(
             "striped", "hover", "condensed", "responsive", "bordered"
@@ -247,7 +246,7 @@ if (is_html) {
       format = "latex",
       row.names = FALSE,
       booktabs = T,
-      digits = 3,
+      digits = 5,
       align = "c",
       longtable = TRUE,
       linesep = c("", "", "", "\\addlinespace")

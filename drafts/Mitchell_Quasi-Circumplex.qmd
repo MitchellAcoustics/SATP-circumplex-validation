@@ -131,7 +131,7 @@ We expand upon the three-step procedure proposed by @Rogoza2021three and adapt i
 
 ## Step 1: Confirm the circular ordering of the circumplex scales
 
-In line with the procedure taken in @Gurtman2000Interpersonal, we begin by confirming the circular ordering of the circumplex scales. This test, developed by @Rounds2000Tinsley, the test of the circular order model involves comparing the obtained order relations for a set of scales against their hypothesized order given a certain circular model. This test is applied in order to ensure that the process of translation has not altered the order of the scales and so the test is applied against the order of the scales in the original instrument. The test is applied to each translation separately, and the results are compiled into a single table.
+In line with the procedure taken in @Gurtman2000Interpersonal and previously employed for the SCM by @Lam2022Assessing, we begin by confirming the circular ordering of the circumplex scales. This test, developed by @Rounds2000Tinsley, the test of the circular order model involves comparing the obtained order relations for a set of scales against their hypothesized order given a certain circular model. This test is applied in order to ensure that the process of translation has not altered the order of the scales and so the test is applied against the order of the scales in the original instrument. The test is applied to each translation separately, and the results are compiled into a single table.
 
 The index used for this test is @Hubert1987Evaluating's correspondence index (CI). This offers a descriptive measure reflecting the degree to which the model's ordered predictions align with a specific sample matrix. The metric is calculated as the proportion of predictions met minus the proportion violated, yielding a range from 1.0 (indicating complete prediction fulfillment) to -1.0 (indicating all predictions contradicted). In alignment with the methodology outlined by Tracey et al. [@Tracey1997RANDALL], we applied a randomization test to the hypothesized order relations [@Hubert1987Evaluating], producing an exact probability, determining the likelihood of achieving the observed model fit in relation to all potential permutations of the matrix. The index thresholds for this test are: a p-value \< 0.05 and a CI \> 0.70.
 
@@ -154,7 +154,9 @@ Readers might note that these indices differ slightly from those used by Rogoza 
 +-----------------------------------------------+----------------+---------------------------+
 | Goodness of Fit Index (GFI)                   | *0.90*         | @Rogoza2021three          |
 +-----------------------------------------------+----------------+---------------------------+
-| Standardized Root Mean Square Residual (SRMR) | *0.08*         | @Moshona2023Optimization  |
+| Standardized Root Mean Square Residual (SRMR) | *0.08*         | @Hu1999Cutoff             |
+|                                               |                |                           |
+|                                               |                | @Moshona2023Optimization  |
 |                                               |                |                           |
 |                                               |                | @Tarlao2020Investigating  |
 +-----------------------------------------------+----------------+---------------------------+
