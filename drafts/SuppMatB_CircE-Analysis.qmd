@@ -41,7 +41,6 @@ format:
     keep-tex: false
     toc: false
     journal:
-      name: PsyArxiv
       formatting: preprint
       model: 3p
       cite-style: authoryear

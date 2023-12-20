@@ -42,7 +42,6 @@ format:
     keep-tex: true
     toc: false
     journal:
-      name: PsyArxiv
       formatting: preprint
       model: 3p
       cite-style: authoryear
@@ -237,13 +236,13 @@ Based on the proof given in @Baktiar2015symmetrical, given that the input matric
 
 The results of the circular ordering test are shown in @tbl-circular-order. The following translations were not confirmed to have a circular ordering of their scales which matches the theoretical order: 'zsm' and 'vie'. They are therefore excluded from the following steps of the analysis.
 
-{{< embed Mitchell_CircE-Analysis.qmd#tbl-circular-order >}}
+{{< embed SuppMatB_CircE-Analysis.qmd#tbl-circular-order >}}
 
 ## Step 2: Confirm the quasi-circumplex structure of the circumplex scales
 
 The results of the SEM model fit for the equal-communality quasi-circumplex structures are shown in @tbl-sem-res.
 
-{{< embed Mitchell_SSM-Analysis.ipynb#tbl-sem-res >}}
+{{< embed SuppMatC_SSM-Analysis.ipynb#tbl-sem-res >}}
 
 Of the remaining 16 languages considered, all but 3 pass the fit indices thresholds. The three which do not achieve the required performance are 'fra', 'por', and 'jpn'. These are excluded from the following steps of the analysis.
 
@@ -251,24 +250,21 @@ Of the remaining 16 languages considered, all but 3 pass the fit indices thresho
 
 @fig-profile-plots demonstrates the SSM process for locating each of the circumplex scales within the circumplex space of the 'cmn' translation. These profile plots show the correlation between the circumplex scales and the external variable (in this case, each of the general attributes) as a function of the angle of the circumplex scale. The SSM model fits a sinusoidal curve to the data points, and the parameters of this curve are used to determine the location of the circumplex scale within the circumplex space. These plots show clearly how adjusting the angles of the circumplex scales can improve the fit of the sinusoidal curve to the data points.
 
-{{< embed Mitchell_SSM-Analysis.ipynb#fig-profile-plots >}}
+{{< embed SuppMatC_SSM-Analysis.ipynb#fig-profile-plots >}}
 
 The model fit results for each translation are shown in @tbl-corr-angles-fit. Since every translation is able to adequately locate the circumplex scales, we can proceed to the final step of the analysis.
 
-{{< embed Mitchell_SSM-Analysis.ipynb#tbl-corr-angles-fit >}}
+{{< embed SuppMatC_SSM-Analysis.ipynb#tbl-corr-angles-fit >}}
 
 ## Step 4: Accurately locating circumplex items within each language
 
 @tbl-correspondence shows the results of the congruence test between the circumplex structure of the original instrument and the circumplex structure of the translated instruments. In addition to calculating these results with the adjusted angles to apply the Step 4 test, we also calculate the results using the unadjusted angles to demonstrate the impact of the adjustment.
 
-{{< embed Mitchell_SSM-Analysis.ipynb#tbl-correspondence >}}
+{{< embed SuppMatC_SSM-Analysis.ipynb#tbl-correspondence >}}
 
 When the adjusted angles for each translation are applied, the resulting circumplex scale location achieve good congruence with their theoretical locations. It should be noted that this is not the case without using the adjusted angles: locating the scales with the cmn translation using the unadjusted angles results in a score of 0.885, below the fit threshold of 0.9, but this increases to 0.991 when using the adjusted angles (see Figure 6). All translations see some degree of improvement by using the adjusted angles.
 
 @fig-cmn-correspondence gives an example of the impact of using the corrected angles for locating the circumplex scales.
 
-{{< embed Mitchell_SSM-Analysis.ipynb#fig-cmn-correspondence >}}
+{{< embed SuppMatC_SSM-Analysis.ipynb#fig-cmn-correspondence >}}
 
-# Acknowledgements {.unnumbered .appendix}
-
-The authors would like to express their thanks to Karn Watcharasupat and Steffen Lepa for their helpful discussions which contributed to the development of this analysis procedure. 
