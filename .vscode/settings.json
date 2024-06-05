@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.rmd": "markdown",
+        "iso_532-1_helper_h.h": "c"
+    }
+}

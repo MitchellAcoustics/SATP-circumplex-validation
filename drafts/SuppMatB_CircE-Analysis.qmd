@@ -21,8 +21,7 @@ author:
     orcid: 0000-0003-0351-3189
     affiliations:
         - ref: ucl-iede
-abstract: |
-  Code accompanying the paper: "Soundscape descriptors in eighteen languages: translation and validation through listening experiments
+environment: ../renv.lock
 
 format:
   # html:
@@ -54,7 +53,7 @@ cache: true
 
 # Testing the quasi-circumplex structure (Steps 1 and 2)
 
-```{r setup, echo=FALSE}
+```{r setup, echo=FALSE, include=FALSE}
 knitr::opts_chunk$set(echo = knitr::is_html_output())
 is_html <- knitr::is_html_output()
 ```
@@ -125,8 +124,8 @@ satp[scales] <- satp |>
 ## Step One: Tracey's Circular Order Model
 
 ```{r}
-#| tbl-cap: "Results of the Circular Order analysis of the SATP dataset."
 #| label: tbl-circular-order
+#| tbl-cap: "Results of the Circular Order analysis of the SATP dataset."
 #| cache: true
 library(RTHORR)
 source(here("utils/RTHORR_funcs.R")) # Load our own functions

@@ -1,7 +1,7 @@
 project:
   title: "SATP Circumplex Testing"
   # type: manuscript
-  # output-dir: _output
+  # output-dir: drafts
 
 toc: true
 number-sections: true

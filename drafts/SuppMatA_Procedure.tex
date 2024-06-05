@@ -130,7 +130,8 @@
 \fi
 \usepackage[]{natbib}
 \bibliographystyle{elsarticle-harv}
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\usepackage{bookmark}
+
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
@@ -169,7 +170,12 @@ Upper Woburn Place},city={London},postcode={WC1H 0NN},postcodesep={}}
 \begin{abstract}
 In depth description for the procedure developed for the paper:
 ``Soundscape descriptors in eighteen languages: translation and
-validation through listening experiments
+validation through listening experiments''. The R and Python code for
+the various tables, figures, and analyses presented in this document can
+be found in \emph{Supplementary Material (B) - Code for Steps 1 \& 2,
+Browne's Circular Stochastic Process Model} and \emph{Supplementary
+Material (C) - Code for Steps 2 through 4: Compiling Step 2 results and
+running Steps 3 and 4}.
 \end{abstract}
 
 
@@ -177,7 +183,8 @@ validation through listening experiments
 
 
 \end{frontmatter}
-    \section{Introduction}\label{introduction}
+    
+\section{Introduction}\label{introduction}
 
 In this analysis, we aim to test the circumplex structure of various
 soundscape survey translations. The circumplex model is a powerful tool
@@ -309,67 +316,28 @@ role in visualizing and understanding the complex interplay of
 variables, offering researchers nuanced frameworks to explore and
 interpret their data.
 
-As described by \citet{Rogoza2021three}:
+\citet{Rogoza2021three} (Fig. 1) provides a helpful visualisation of
+these circumplex variations:
 
-\begin{quote}
-The circumplex model can be defined through the terms of: 1) the
-possibility to locate variables differentiated in the model in the
-two-dimensional space with 2) equal spacing (i.e.~same distance between
-variables within the model around circumplex) and 3) equal communality
-(i.e.~same distance between variables from the middle of the circle)
-\citep[\citet{Pincus2003Interpersonal}]{Gurtman1994differentiating}. On
-the basis of these criteria, one could differentiate four models,
-depicted on Fig. 1: a circular one (less restrictive Model 1),
-quasi-circumplex (Model 2 and 3), and circumplex (most restrictive Model
-4).
-\end{quote}
+\begin{figure}[H]
 
-{{< figure src="figures/Rogoza2021three-fig1.png" caption="Fig. 1. Four models of circumplex structure. Model 1 is a circular model, Model 2 is a quasi-circumplex model with equal spacing, Model 3 is a quasi-circumplex model with equal communality, and Model 4 is a circumplex model with equal spacing and equal communality." >}}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{Rogoza2021three-fig1.jpg}
 
-\subsection{Locating external variables within circumplex
-models}\label{locating-external-variables-within-circumplex-models}
+}
 
-Once the general circumplex structure is tested, it is possible to
-investigate the likelihood to locate an external variable (e.g.,
-psychoacoustic loudness, N) within the empirical circumplex. The
-circumplex model provides a precise framework for predicting the
-relationships between an external variable and all circumplex variables.
-The Structural Summary Method (SSM) yields several key estimations,
-including: Model fit (R2), which assesses how well the observed
-sinusoidal curve aligns with the cosine function, indicating the
-goodness of fit. Elevation, representing the average correlation between
-an external variable and all circumplex variables. Amplitude (vector
-length), measuring the distance from the mean of the external variable's
-correlation to its peak correlation with circumplex variables. This
-value signifies the uniqueness of the profile, indicating whether it is
-prominently associated with a specific circumplex variable or equally
-related to all. Angular displacement, denoting the angle at which the
-profile reaches its maximum point, indicating the empirical location of
-the variable within the circumplex as observed in the data. The
-Structural Summary Method (SSM) is a technique used to summarize
-correlation patterns among measurement scores that are hypothesized to
-conform to a circumplex structure (Rogoza, Cieciuch, \& Strus, 2021).
-SSM aims to fit a sinusoidal curve to data points (qi) based on their
-nominal angular positions (θi). This is achieved by optimizing the
-parameters for elevation (e), amplitude (i), and displacement (d).
-Mathematically, these parameters are used to model the correlational
-information (qi) in equation 1: q\_i=e+α cos⁡〖(θ\_i-d)〗. (1) It is
-essential to evaluate how well the sinusoidal curve aligns with the
-cosine function by examining its goodness of fit, as indicated by the R2
-value. If R2values fall below 0.70, it is advisable not to interpret the
-remaining coefficients and to discontinue the process of locating
-external variables. Conversely, R2 values exceeding 0.80 indicate a
-strong fit. Additionally, it's worth mentioning that amplitude
-estimates, reflecting the distinctiveness of the profile, and elevation
-estimates, indicating the presence of a general factor, are considered
-notable when they surpass 0.15.
+\caption[Graphical representation of four variations of circumplex model
+structure. Model 1 is a circular model, Model 2 is a quasi-circumplex
+model with equal spacing, Model 3 is a quasi-circumplex model with equal
+communality, and Model 4 is a circumplex model with equal spacing and
+equal communality.]{Graphical representation of four variations of circumplex model
+structure. Model 1 is a circular model, Model 2 is a quasi-circumplex
+model with equal spacing, Model 3 is a quasi-circumplex model with equal
+communality, and Model 4 is a circumplex model with equal spacing and
+equal communality.\footnotemark{}}
 
-The structure of the circumplex is key to determining where external
-variables are located. Given differing angles and communalities, the
-external variable can occupy different locations within the circumplex.
-Revealing and validating the true structure of a particular circumplex
-model is therefore key to reliably identifying correct location of
-external variables within the circumplex space.
+\end{figure}%
+\footnotetext{Reproduced from \citep{Rogoza2021three} with
+  permission by the publisher.}
 
 \subsection{Translating circumplex
 instruments}\label{translating-circumplex-instruments}
@@ -398,94 +366,13 @@ instrument. Finally, it may be that even if the original instrument is
 valid for e.g.~the English-speaking population, it may not be valid for
 other populations due to cultural differences.
 
-\subsubsection{Goals of translating a circumplex
-instrument}\label{goals-of-translating-a-circumplex-instrument}
-
-Two approaches could be taken when attempting to translate a survey
-instrument. The first approach would attempt to achieve direct
-concurrence with the original instrument, where each scale is directly
-correlated with the corresponding scale from the original instrument. If
-the circumplex structure is identical between the two languages, then
-this approach would allow for the most direct comparison between the two
-languages. However, if the circumplex structure is not identical between
-the two languages, then this approach would lead to a loss of
-information. The second approach would attempt to achieve the same
-circumplex structure in the new language as in the original language.
-This approach would allow for the most direct comparison between the two
-languages.
-
-In this second approach, identifying the differences in structure
-between translations enable the process of locating an external variable
-to be corrected for the differences in structure. Given that at minimum
-a quasi-circumplex structure can be confirmed, then the deviations in
-either the angles or communalities from the ideal circumplex structure
-can be measured and accounted for. When this is done separately for the
-origianl and translated instruments, then an external variable which has
-the same theoretical location in both instruments should be located in
-the same location in both corrected instruments.
-
-This has an important impact on comparing results under the two
-translations. If an external variable is theoretically located in a
-single, fixed position in the circumplex space, locating it without
-accounting for the differences in structure between the two translations
-will lead to different locations in the two translations. The
-interpretation of this result would then be that the external variable
-is located in different positions in the two languages. However, if the
-differences in structure are accounted for, then the external variable
-should be located in the same position in both translations. By applying
-the correction we can attempt to discover differences in the effect of
-external variables, independent of the differences in structure between
-the two translations.
-
-\subsection{A test case: The Soundscape Circumplex Model
-(SCM)}\label{a-test-case-the-soundscape-circumplex-model-scm}
-
-In 2010, \citet{Axelsson2010principal} proposed a \emph{principle
-components} model of soundscape perception. Due to its similarity to the
-widely-studied Russell's circumplex model of affect
-\citep{Russell1980circumplex}, Axelsson's principal component model is
-often referred to as the Soundscape Circumplex Model (SCM) in soundscape
-literature. The SCM and the Swedish Soundscape Quality Protocol (SSQP)
-\citep{Axelsson2012Swedish} utilizing it quickly became the predominant
-method of soundscape assessment in both scientific literature and
-professional practice \citep{Aletta2023Adoption}, due to its ease of
-use, interpretability, and, crucially, its ability to summarise the
-complex interrelationships between soundscape descriptors within a
-straightforward and familiar two-dimensional space. Togeter with a
-similar principal component model in \citet{Cain2013development}, the
-framework of the circumplex model of soundscape perception was
-subsequently adapted into an integral part of the standardised protocols
-for soundscape data collection, specifically in Method A of
-\citet{ISO12913Part2}.
-
-Currently, the soundscape community relies very heavily on the framework
-proposed in \citet{ISO12913Part2}, both for theory development and for
-procuring empirical evidence of the benefits of the soundscape approach,
-in real life scenarios. In a recent systematic literature review,
-\citet{Aletta2023Adoption} idenitified 254 scientific publications which
-have referred to ISO 12913 since its publication in 2018, with 50 of
-them appropriately making use of the data collection methods. Of those,
-several papers included multiple studies, with 51 studies making use of
-the SCM as recommended in the ISO standard. In addition, the SCM has
-been used in many more studies without reference to the ISO standard
-\citep{Engel2018Review}, and has been haphazardly translated into many
-languages
-\citep{Tarlao2016Comparing, Nagahata2019Examination, Tarlao2020Investigating, Aletta2019Exploringa}.
-
-The Soundscape Circumplex Model (SCM) was developed in 2010 by
-\citet{Axelsson2010principal} to describe the perception of ambient
-sound environments. It has since been used in a number of studies to
-describe the perception of soundscapes in different contexts and
-cultures \citep{ISO12913Part2}. The SCM is composed of eight scales,
-which closely resemble the eight scales of the Circumplex Model of
-Affect \citep{Russell1980circumplex}. The 7 scales are arranged in two
-bipolar dimensions, with pleasant-annoying along the x-axis (valence)
-and eventful-uneventful along the y-axis (arousal). Arranged in a
-circular pattern around the circumplex, beginning at 0 degrees and
-moving counter-clockwise, the eight scales are: pleasant (0)
-
 \section{A four step procedure for the analysis of circumplex
 models}\label{a-four-step-procedure-for-the-analysis-of-circumplex-models}
+
+This section of the Supplementary Material is intended as an extended
+companion to Section 3. Data Analysis of the main manuscript. Some text
+is repeated here, but additional rationales and details are included
+which were ommitted from the manuscript for conciseness.
 
 In \citet{Rogoza2021three}, the authors propose a three-step procedure
 for assessing circumplex models. The steps in this procedure are: 1)
@@ -535,12 +422,12 @@ specific sample matrix. The metric is calculated as the proportion of
 predictions met minus the proportion violated, yielding a range from 1.0
 (indicating complete prediction fulfillment) to -1.0 (indicating all
 predictions contradicted). In alignment with the methodology outlined by
-Tracey et al. \citep{Tracey1997RANDALL}, we applied a randomization test
-to the hypothesized order relations \citep{Hubert1987Evaluating},
-producing an exact probability, determining the likelihood of achieving
-the observed model fit in relation to all potential permutations of the
-matrix. The index thresholds for this test are: a p-value \textless{}
-0.05 and a CI \textgreater{} 0.70.
+\citet{Tracey1997RANDALL}, we applied a randomization test to the
+hypothesized order relations \citep{Hubert1987Evaluating}, producing an
+exact probability, determining the likelihood of achieving the observed
+model fit in relation to all potential permutations of the matrix. The
+index thresholds for this test are: a p-value \textless{} 0.05 and a CI
+\textgreater{} 0.70.
 
 \subsection{Step 2: Confirm the quasi-circumplex structure of the
 circumplex
@@ -556,31 +443,37 @@ conforms to a circumplex pattern. The four model variations
 (unconstrained circular, equal spacing quasi-circumplex,
 equal-communality quasi-circumplex, and strict circumplex with equal
 spacing and communality) can each be investigated using this model. For
-the unconstrained and quasi-circumplex models, Brownen's model allows
-for the estimation of the angles and communalities of the circumplex
-scales. From these results for the quasi-circumplex models, we can
-derive the corrected angles (or communalities) for each translation,
-which can be used in the next step of the analysis.
+the unconstrained and quasi-circumplex models, Browne's model allows for
+the estimation of the angles and communalities of the circumplex scales.
+From these results for the quasi-circumplex models, we can derive the
+corrected angles for each translation, which can be used in the next
+step of the analysis.
 
 This model is implemented in the CircE package \citep{Grassi2010CircE}
-for R \citep{RCT2018R}. The model is applied to each translation
-separately, testing each of the four model variations, and the results
-are compiled into a single table. CircE provides a suite suite of SEM
-fit indices, which are statistical measures used to evaluate the
-goodness of fit of the models. For this study, we use the following fit
-indices: Comparative Fit Index (CFI), Goodness of Fit Index (GFI), and
-Standardized Root Mean Square Residual (SRMR), summarised with their
-respective thresholds in Table~\ref{tbl-indices}.
+for R \citep{RCT2018R}\footnote{The version of CircE originally
+  developed by Grassi is no longer maintained and fails on installation
+  in R. As such, the specific version of CircE with bug fixes
+  implemented by the authors used for this analysis is hosted separately
+  on Github at: \url{https://github.com/MitchellAcoustics/CircE-R}}. The
+model is applied to each translation separately, testing each of the
+four model variations, and the results are compiled into a single table.
+CircE provides a suite suite of SEM fit indices, which are statistical
+measures used to evaluate the goodness of fit of the models. For this
+study, we use the following fit indices: Comparative Fit Index (CFI),
+Goodness of Fit Index (GFI), and Standardized Root Mean Square Residual
+(SRMR), summarised with their respective thresholds in
+Table~\ref{tbl-indices}.
 
 Readers might note that these indices differ slightly from those used by
-Rogoza et al., most notably the exclusion of the Root Mean Square Error
-of Approximation (RMSEA), a commonly used metric. RMSEA was excluded
-from the analysis on the basis of both Rogoza's own critiques\footnote{``it
-  is worth noting that the RMSEA may not be best suited to evaluate
-  circumplex models. It becomes biased in the case of high correlations
-  between proximal variables, as found in circumplex models, and should
-  be interpreted with caution.'' \citep{Rogoza2021three}} and recent
-warnings from \citet{West2022Handbook}.
+\citet{Rogoza2021three}, most notably the exclusion of the Root Mean
+Square Error of Approximation (RMSEA), a commonly used metric. RMSEA was
+excluded from the analysis on the basis of both Rogoza's own
+critiques\footnote{``it is worth noting that the RMSEA may not be best
+  suited to evaluate circumplex models. It becomes biased in the case of
+  high correlations between proximal variables, as found in circumplex
+  models, and should be interpreted with caution.''
+  \citep{Rogoza2021three}} and recent warnings from
+\citet{West2022Handbook}.
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.5106}}
@@ -701,13 +594,11 @@ general factor, are considered notable when they surpass 0.15.
 \end{quote}
 
 As described in \citet{Rogoza2021three}, Step Two involves testing
-whether external variables can be located within the circumplex.
-
-Because we have derived new angles in the SEM step, we use these
-`adjusted' angles for calculating the SSM parameters.
-
-In order to determine whether the language circumplexes can adequately
-allow an external variable to be located, we use the following criteria:
+whether external variables can be located within the circumplex. Because
+we have derived new angles in the SEM step, we use these `adjusted'
+angles for calculating the SSM parameters. In order to determine whether
+the language circumplexes can adequately allow an external variable to
+be located, we use the following criteria:
 
 \begin{itemize}
 \tightlist
@@ -722,10 +613,17 @@ however we use an increased criterion of \(R^2 > 0.9\) since we have a
 prior expectation that the circumplex variables should fit very well
 within each translation's circumplex.
 
+The structure of the circumplex is key to determining where external
+variables are located. Given differing angles and communalities, the
+external variable can occupy different locations within the circumplex.
+Revealing and validating the true structure of a particular circumplex
+model is therefore key to reliably identifying correct location of
+external variables within the circumplex space.
+
 \subsection{Step 4: Accurately locating circumplex items within each
 language}\label{step-4-accurately-locating-circumplex-items-within-each-language}
 
-The final step of \citet{Rogoza2021three} 's three step procedure is to
+The final step of \citet{Rogoza2021three}'s three step procedure is to
 test the congruence between the empirical locations and theoretical
 expectations within the circumplex structure. In the case of the
 soundscape circumplex and our SATP data, we don't have an external
@@ -800,11 +698,11 @@ dissimilarity/similarity in orientation between matrices/subjects before
 functional alignment.
 \end{quote}
 
-Based on the proof given in \citet{Baktiar2015symmetrical}, given that
+Based on the proof given in \citet{Bakhtiar2015symmetrical}, given that
 the input matrices are scaled (i.e.~\texttt{rotational(scale=True)}),
 then the Procrustes distance is a true distance measure which obeys
-\(0 < p(X, Y) < 1\) \citep[322]{Bakhtiar2015symmetrical}. Therefore we
-can convert the Procrustes distance to a similarity measure by
+\(0 < p(X, Y) < 1\) \citep{Bakhtiar2015symmetrical} (p.~322). Therefore
+we can convert the Procrustes distance to a similarity measure by
 subtracting it from 1.
 
 \section{Results}\label{results}
@@ -891,33 +789,34 @@ quasi-circumplex structures are shown in Table~\ref{tbl-sem-res}.
 
 \end{longtable}
 
-Of the remaining 16 languages considered, all but 3 pass the fit indices
-thresholds. The three which do not achieve the required performance are
-`fra', `por', and `jpn'. These are excluded from the following steps of
-the analysis.
+Of the remaining 16 languages considered, all but 4 pass the fit indices
+thresholds. The four which do not achieve the required performance are
+`fra', `kor', `por', and `jpn'. These are excluded from the following
+steps of the analysis.
 
 \subsection{Step 3: Locate the full dataset circumplex scales within
 each language's circumplex
 space}\label{step-3-locate-the-full-dataset-circumplex-scales-within-each-languages-circumplex-space-1}
 
-Figure~\ref{fig-profile-plots} demonstrates the SSM process for locating
-each of the circumplex scales within the circumplex space of the `cmn'
-translation. These profile plots show the correlation between the
-circumplex scales and the external variable (in this case, each of the
-general attributes) as a function of the angle of the circumplex scale.
-The SSM model fits a sinusoidal curve to the data points, and the
-parameters of this curve are used to determine the location of the
-circumplex scale within the circumplex space. These plots show clearly
-how adjusting the angles of the circumplex scales can improve the fit of
-the sinusoidal curve to the data points.
+As a demonstration of this process, Figure~\ref{fig-profile-plots}
+demonstrates the SSM process for locating each of the circumplex scales
+within the circumplex space of the `cmn' translation. These profile
+plots show the correlation between the circumplex scales and the
+external variable (in this case, each of the general attributes) as a
+function of the angle of the circumplex scale. The SSM model fits a
+sinusoidal curve to the data points, and the parameters of this curve
+are used to determine the location of the circumplex scale within the
+circumplex space. These plots show clearly how adjusting the angles of
+the circumplex scales can improve the fit of the sinusoidal curve to the
+data points.
 
 \begin{figure}
 
-\begin{minipage}[t]{0.25\linewidth}
+\begin{minipage}{0.25\linewidth}
 
 \centering{
 
-\includegraphics{SuppMatA_Procedure_files/figure-latex/fig-profile-plots-output-1.png}
+\includegraphics{SuppMatA_Procedure_files/figure-latex/SuppMatC_SSM-Analysis-fig-profile-plots-output-1.png}
 
 }
 
@@ -925,11 +824,11 @@ the sinusoidal curve to the data points.
 
 \end{minipage}%
 %
-\begin{minipage}[t]{0.25\linewidth}
+\begin{minipage}{0.25\linewidth}
 
 \centering{
 
-\includegraphics{SuppMatA_Procedure_files/figure-latex/fig-profile-plots-output-2.png}
+\includegraphics{SuppMatA_Procedure_files/figure-latex/SuppMatC_SSM-Analysis-fig-profile-plots-output-2.png}
 
 }
 
@@ -937,11 +836,11 @@ the sinusoidal curve to the data points.
 
 \end{minipage}%
 %
-\begin{minipage}[t]{0.25\linewidth}
+\begin{minipage}{0.25\linewidth}
 
 \centering{
 
-\includegraphics{SuppMatA_Procedure_files/figure-latex/fig-profile-plots-output-3.png}
+\includegraphics{SuppMatA_Procedure_files/figure-latex/SuppMatC_SSM-Analysis-fig-profile-plots-output-3.png}
 
 }
 
@@ -949,11 +848,11 @@ the sinusoidal curve to the data points.
 
 \end{minipage}%
 %
-\begin{minipage}[t]{0.25\linewidth}
+\begin{minipage}{0.25\linewidth}
 
 \centering{
 
-\includegraphics{SuppMatA_Procedure_files/figure-latex/fig-profile-plots-output-4.png}
+\includegraphics{SuppMatA_Procedure_files/figure-latex/SuppMatC_SSM-Analysis-fig-profile-plots-output-4.png}
 
 }
 
@@ -961,11 +860,11 @@ the sinusoidal curve to the data points.
 
 \end{minipage}%
 \newline
-\begin{minipage}[t]{0.25\linewidth}
+\begin{minipage}{0.25\linewidth}
 
 \centering{
 
-\includegraphics{SuppMatA_Procedure_files/figure-latex/fig-profile-plots-output-5.png}
+\includegraphics{SuppMatA_Procedure_files/figure-latex/SuppMatC_SSM-Analysis-fig-profile-plots-output-5.png}
 
 }
 
@@ -973,11 +872,11 @@ the sinusoidal curve to the data points.
 
 \end{minipage}%
 %
-\begin{minipage}[t]{0.25\linewidth}
+\begin{minipage}{0.25\linewidth}
 
 \centering{
 
-\includegraphics{SuppMatA_Procedure_files/figure-latex/fig-profile-plots-output-6.png}
+\includegraphics{SuppMatA_Procedure_files/figure-latex/SuppMatC_SSM-Analysis-fig-profile-plots-output-6.png}
 
 }
 
@@ -985,11 +884,11 @@ the sinusoidal curve to the data points.
 
 \end{minipage}%
 %
-\begin{minipage}[t]{0.25\linewidth}
+\begin{minipage}{0.25\linewidth}
 
 \centering{
 
-\includegraphics{SuppMatA_Procedure_files/figure-latex/fig-profile-plots-output-7.png}
+\includegraphics{SuppMatA_Procedure_files/figure-latex/SuppMatC_SSM-Analysis-fig-profile-plots-output-7.png}
 
 }
 
@@ -997,11 +896,11 @@ the sinusoidal curve to the data points.
 
 \end{minipage}%
 %
-\begin{minipage}[t]{0.25\linewidth}
+\begin{minipage}{0.25\linewidth}
 
 \centering{
 
-\includegraphics{SuppMatA_Procedure_files/figure-latex/fig-profile-plots-output-8.png}
+\includegraphics{SuppMatA_Procedure_files/figure-latex/SuppMatC_SSM-Analysis-fig-profile-plots-output-8.png}
 
 }
 
@@ -1090,21 +989,21 @@ When the adjusted angles for each translation are applied, the resulting
 circumplex scale location achieve good congruence with their theoretical
 locations. It should be noted that this is not the case without using
 the adjusted angles: locating the scales with the cmn translation using
-the unadjusted angles results in a score of 0.885, below the fit
-threshold of 0.9, but this increases to 0.991 when using the adjusted
-angles (see Figure 6). All translations see some degree of improvement
-by using the adjusted angles.
+the unadjusted angles results in a score of 0.879, below the fit
+threshold of 0.9, but this increases to 0.990 when using the adjusted
+angles (see Figure~\ref{fig-cmn-correspondence}). All translations see
+some degree of improvement by using the adjusted angles.
 
 Figure~\ref{fig-cmn-correspondence} gives an example of the impact of
 using the corrected angles for locating the circumplex scales.
 
 \begin{figure}
 
-\begin{minipage}[t]{0.50\linewidth}
+\begin{minipage}{0.50\linewidth}
 
 \centering{
 
-\includegraphics{SuppMatA_Procedure_files/figure-latex/fig-cmn-correspondence-output-1.png}
+\includegraphics{SuppMatA_Procedure_files/figure-latex/SuppMatC_SSM-Analysis-fig-cmn-correspondence-output-1.png}
 
 }
 
@@ -1112,11 +1011,11 @@ using the corrected angles for locating the circumplex scales.
 
 \end{minipage}%
 %
-\begin{minipage}[t]{0.50\linewidth}
+\begin{minipage}{0.50\linewidth}
 
 \centering{
 
-\includegraphics{SuppMatA_Procedure_files/figure-latex/fig-cmn-correspondence-output-2.png}
+\includegraphics{SuppMatA_Procedure_files/figure-latex/SuppMatC_SSM-Analysis-fig-cmn-correspondence-output-2.png}
 
 }
 
