@@ -23,7 +23,7 @@ format:
     latex-clean: true
     keep-tex: false
     journal:
-      name: PsyArxiv
+      name: Applied Acoustics
       formatting: preprint
       model: 3p
       cite-style: authoryear

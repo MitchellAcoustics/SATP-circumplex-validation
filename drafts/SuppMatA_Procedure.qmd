@@ -23,7 +23,7 @@ author:
     affiliations:
         - ref: ucl-iede
 abstract: |
-  In depth description for the procedure developed for the paper: "Soundscape descriptors in eighteen languages: translation and validation through listening experiments". The R and Python code for the various tables, figures, and analyses presented in this document can be found in *Supplementary Material (B) - Code for Steps 1 & 2, Browne's Circular Stochastic Process Model* and *Supplementary Material (C) - Code for Steps 2 through 4: Compiling Step 2 results and running Steps 3 and 4*.
+  In depth description for the procedure developed for the paper: "Soundscape descriptors in eighteen languages: translation and validation through listening experiments". The R and Python code for the various tables, figures, and analyses presented in this document can be found in the repository hosted on OSF [https://osf.io/jvna2/](https://osf.io/jvna2/).
 
 format:
   # html:
@@ -46,7 +46,6 @@ format:
       model: 3p
       cite-style: authoryear
     notebook-links: true
-
 
 bibliography: FellowshipRefs.bib
 date: last-modified
